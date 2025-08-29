@@ -1,0 +1,176 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký - MyBank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="flex justify-center mb-6">
+                <div class="bg-green-600 p-4 rounded-full shadow-lg">
+                    <span class="text-white text-3xl">✨</span>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Đăng ký tài khoản</h2>
+            <p class="text-gray-600">Tạo tài khoản MyBank mới</p>
+        </div>
+
+        <!-- Register Form -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <form class="space-y-4" id="registerForm">
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tên đăng nhập
+                    </label>
+                    <input id="username" name="username" type="text" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="Tên đăng nhập">
+                </div>
+
+                <!-- Customer Name -->
+                <div>
+                    <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">
+                        Họ và tên
+                    </label>
+                    <input id="customerName" name="customerName" type="text" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="Nguyễn Văn A">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                    </label>
+                    <input id="email" name="email" type="email" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="email@example.com">
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">
+                        Số điện thoại
+                    </label>
+                    <input id="phoneNumber" name="phoneNumber" type="tel" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="0123456789">
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                        Mật khẩu
+                    </label>
+                    <div class="relative">
+                        <input id="password" name="password" type="password" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 pr-12"
+                               placeholder="Tối thiểu 8 ký tự">
+                        <button type="button"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                onclick="togglePassword('password','eyeIcon1')">
+                            <span id="eyeIcon1" class="text-gray-400 hover:text-gray-600 text-xl">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
+                        Nhập lại mật khẩu
+                    </label>
+                    <div class="relative">
+                        <input id="confirmPassword" name="confirmPassword" type="password" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 pr-12"
+                               placeholder="Nhập lại mật khẩu">
+                        <button type="button"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                onclick="togglePassword('confirmPassword','eyeIcon2')">
+                            <span id="eyeIcon2" class="text-gray-400 hover:text-gray-600 text-xl">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!-- Submit -->
+                <button type="submit"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold
+                               py-3 px-4 rounded-lg transition-colors duration-200">
+                    ✨ Tạo tài khoản
+                </button>
+            </form>
+
+            <!-- Back to Login -->
+            <div class="mt-6 text-center">
+                <a href="login" class="text-blue-600 hover:text-blue-500 font-medium underline">
+                    ← Quay lại đăng nhập
+                </a>
+            </div>
+
+            <p id="message" class="text-red-500 mt-3 text-center"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId, eyeId) {
+        const input = document.getElementById(inputId);
+        const eyeIcon = document.getElementById(eyeId);
+
+        if (input.type === "password") {
+            input.type = "text";
+            eyeIcon.textContent = "🙈";
+        } else {
+            input.type = "password";
+            eyeIcon.textContent = "👁️";
+        }
+    }
+    document.getElementById("registerForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value;
+        const customerName = document.getElementById("customerName").value;
+        const email = document.getElementById("email").value;
+        const phoneNumber = document.getElementById("phoneNumber").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+            document.getElementById("message").innerText = "Mật khẩu nhập lại không khớp!";
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, password, customerName, email, phoneNumber})
+            });
+
+            if (response.ok) {
+                document.getElementById("message").classList.remove("text-red-500");
+                document.getElementById("message").classList.add("text-green-600");
+                document.getElementById("message").innerText = "Đăng ký thành công! Vui lòng đăng nhập.";
+            } else {
+                const errorText = await response.text();
+                document.getElementById("message").innerText = errorText || "Đăng ký thất bại!";
+            }
+        } catch (err) {
+            document.getElementById("message").innerText = "Lỗi kết nối server!";
+        }
+    });
+</script>
+</body>
+</html>

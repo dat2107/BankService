@@ -1,0 +1,171 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - MyBank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="flex justify-center mb-6">
+                <div class="bg-blue-600 p-4 rounded-full shadow-lg">
+                    <span class="text-white text-3xl">🏦</span>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Đăng nhập MyBank</h2>
+            <p class="text-gray-600">Truy cập tài khoản ngân hàng của bạn</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <form class="space-y-6" id="loginForm">
+                <!-- Username/Email -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tên đăng nhập hoặc Email
+                    </label>
+                    <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg
+                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                            placeholder="Nhập tên đăng nhập hoặc email"
+                    >
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mật khẩu
+                    </label>
+                    <div class="relative">
+                        <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg
+                                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                       transition-colors duration-200 pr-12"
+                                placeholder="Nhập mật khẩu"
+                        >
+                        <button type="button"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                onclick="togglePassword()">
+                            <span id="eyeIcon" class="text-gray-400 hover:text-gray-600 text-xl">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember" name="remember" type="checkbox"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="remember" class="ml-2 text-sm text-gray-600">Ghi nhớ đăng nhập</label>
+                    </div>
+                    <a href="forgot" class="text-sm text-blue-600 hover:text-blue-500 underline">
+                        Quên mật khẩu?
+                    </a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700
+                               hover:from-blue-700 hover:to-blue-800 text-white font-semibold
+                               py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transform
+                               hover:scale-105 transition-all duration-300">
+                    🔐 Đăng nhập
+                </button>
+            </form>
+
+            <!-- Register Link -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    Chưa có tài khoản?
+                    <a href="register" class="text-blue-600 hover:text-blue-500 font-medium underline">
+                        Đăng ký ngay
+                    </a>
+                </p>
+            </div>
+
+            <p id="message" class="text-red-500 mt-3 text-center"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle password visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.textContent = '🙈';
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.textContent = '👁️';
+        }
+    }
+
+    // Submit login
+    document.getElementById("loginForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, password})
+            });
+
+            if (response.ok) {
+                const token = await response.text();
+                localStorage.setItem("token", token);
+
+                // gọi /me để lấy role
+                const meResponse = await fetch("/api/auth/me", {
+                    headers: {"Authorization": "Bearer " + token}
+                });
+
+                if (meResponse.ok) {
+                    const me = await meResponse.json();
+                    if (me.role === "ROLE_ADMIN") {
+                        window.location.href = "/dashboard";
+                    } else {
+                        window.location.href = "/home";
+                    }
+                } else {
+                    document.getElementById("message").innerText = "Không lấy được role!";
+                }
+            } else {
+                document.getElementById("message").innerText = "Sai thông tin đăng nhập!";
+            }
+        } catch (err) {
+            document.getElementById("message").innerText = "Lỗi kết nối server!";
+        }
+    });
+</script>
+</body>
+</html>
