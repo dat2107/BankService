@@ -1,0 +1,85 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page isELIgnored="true" %>
+<html>
+<head>
+    <title>User Levels List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-5xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">User Levels List</h2>
+        <a  onclick="openAddModal()"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Add New User Level
+        </a>
+    </div>
+
+    <!-- Bảng danh sách user level -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-200 text-gray-700">
+            <thead class="bg-gray-800 text-white">
+            <tr>
+                <th class="px-4 py-2 border">ID</th>
+                <th class="px-4 py-2 border">Level Name</th>
+                <th class="px-4 py-2 border">Card Limit</th>
+                <th class="px-4 py-2 border">Daily Transfer Limit</th>
+                <th class="px-4 py-2 border">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="levelTableBody" class="text-center">
+            <!-- dữ liệu sẽ được load bằng JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6">
+        <a href="user-level" onclick="navigate(event, 'user-level')"
+           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Back
+        </a>
+    </div>
+</div>
+<div id="userLevelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <h2 id="modalTitle" class="text-xl font-bold mb-4">Add User Level</h2>
+
+        <form id="userLevelForm" onsubmit="return false;" class="space-y-4" >
+            <input type="hidden" name="id" id="levelId"/>
+
+            <div>
+                <label class="block font-semibold mb-1">Level Name</label>
+                <input type="text" name="levelName" id="levelName" required
+                       class="w-full border rounded px-3 py-2"/>
+            </div>
+
+            <div>
+                <label class="block font-semibold mb-1">Card Limit</label>
+                <input type="number" name="cardLimit" id="cardLimit" required
+                       class="w-full border rounded px-3 py-2"/>
+            </div>
+
+            <div>
+                <label class="block font-semibold mb-1">Daily Transfer Limit</label>
+                <input type="number" name="dailyTransferLimit" id="dailyTransferLimit" required
+                       class="w-full border rounded px-3 py-2"/>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeModal()"
+                        class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">
+                    Cancel
+                </button>
+                <button type="button" id="saveBtn"
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/assets/js/userlevel.js"></script>
+</body>
+</html>

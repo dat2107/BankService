@@ -54,7 +54,6 @@ public class ViewAuthController {
         }
     }
 
-
     @GetMapping("/home")
     public String showHomeform(){
         return "home";
@@ -65,8 +64,39 @@ public class ViewAuthController {
         return "dashboard";
     }
 
+    @GetMapping("/dashboardContent")
+    public String dashboardContent() {
+        return "dashboardContent";  // /WEB-INF/views/dashboardContent.jsp
+    }
+
     @GetMapping("/forgot")
     public String showForgotform(){
         return "forgot";
     }
+
+    @GetMapping("/account")
+    public String showAccountForm() {
+        return "account"; // account.jsp trong /WEB-INF/views/
+    }
+
+    @GetMapping("/createCard")
+    public String showCreateCardForm(){
+        return "createCard";
+    }
+
+    @GetMapping("/user")
+    public String showUserForm(){
+        return "user";
+    }
+
+    @GetMapping("/user-level")
+    public String showUserLevelForm(){
+        return "user-level";
+    }
+
+    @GetMapping("/vip-detail")
+    public String vipDetailPage() {
+        return "vip-detail"; // Spring sẽ map tới /WEB-INF/views/vip-detail.jsp
+    }
+
 }

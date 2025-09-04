@@ -31,7 +31,10 @@
             </div>
             <nav class="hidden md:flex space-x-6">
                 <a href="/home" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700 bg-blue-700">Trang Chủ</a>
-                <a href="/account" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Tài Khoản</a>
+                <a href="/account" onclick="navigate(event, '/account')"
+                   class="hover:text-blue-200 px-3 py-2 rounded-lg hover:bg-blue-700">
+                    Tài Khoản
+                </a>
                 <a href="/history" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Lịch Sử</a>
                 <a href="/services" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Dịch Vụ</a>
                 <a href="/contact" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Liên Hệ</a>
@@ -47,7 +50,10 @@
         <!-- Mobile menu -->
         <div id="mobileMenu" class="hidden md:hidden mt-4 space-y-2">
             <a href="/home" class="block hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700 bg-blue-700">Trang Chủ</a>
-            <a href="/account" class="block hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Tài Khoản</a>
+            <a href="/account" onclick="navigate(event, '/account')"
+               class="hover:text-blue-200 px-3 py-2 rounded-lg hover:bg-blue-700">
+                Tài Khoản
+            </a>
             <a href="/history" class="block hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Lịch Sử</a>
             <a href="/services" class="block hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Dịch Vụ</a>
             <a href="/contact" class="block hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Liên Hệ</a>
@@ -57,7 +63,7 @@
 </header>
 
 <!-- Welcome Section -->
-<main class="container mx-auto px-6 py-16">
+<main id="mainContent" class="container mx-auto px-6 py-16">
     <div class="text-center">
         <div class="mb-8">
             <h1 id="welcomeUser" class="text-5xl md:text-6xl font-bold text-gray-800 mb-4 animate-fade-in">
@@ -158,6 +164,8 @@
         </div>
     </div>
 </main>
-
+<script src="/assets/js/home.js"></script>
+<script src="/assets/js/account.js"></script>
+<script src="/assets/js/createCard.js"></script>
 </body>
 </html>

@@ -88,4 +88,9 @@ public class AccountService {
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy account với id: "+accountId));
     }
+
+    public Account getAccountById(Long id) {
+        return accountRepository.findByAccountId(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
 }

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page isELIgnored="true" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -41,13 +42,16 @@
         <div class="p-6">
             <ul class="space-y-2">
                 <li>
-                    <a href="#" class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 bg-blue-50 text-blue-600">
+                    <a href="/dashboard"
+                       onclick="goDashboard(event)"
+                       class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                         <span>📊</span>
                         <span class="font-medium">Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <a href="user" onclick="navigate(event, 'user')"
+                       class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                         <span>👥</span>
                         <span class="font-medium">Quản lý người dùng</span>
                     </a>
@@ -65,9 +69,10 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <a href="user-level" onclick="navigate(event, 'user-level')"
+                       class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                         <span>🔐</span>
-                        <span class="font-medium">Phân quyền</span>
+                        <span class="font-medium">Phân cấp người dùng</span>
                     </a>
                 </li>
             </ul>
@@ -75,7 +80,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 p-8">
+    <main id="mainContent" class="flex-1 p-8">
         <div class="mb-8">
             <h3 class="text-3xl font-bold text-gray-800 mb-2">Dashboard Quản trị</h3>
             <p class="text-gray-600">Tổng quan hệ thống ngân hàng</p>
@@ -126,15 +131,22 @@
 
         <!-- User Table -->
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex justify-between items-center">
-                    <h4 class="text-xl font-semibold text-gray-800">Bảng người dùng</h4>
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2">
-                        <span>+</span>
-                        <span>Tạo người dùng</span>
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h4 class="text-xl font-semibold text-gray-800">Bảng người dùng</h4>
+                <div class="flex space-x-2">
+                    <!-- Thanh tìm kiếm -->
+                    <input id="searchInput" type="text" placeholder="Tìm kiếm người dùng..."
+                           class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button onclick="searchUsers()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        🔍 Tìm kiếm
+                    </button>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        + Tạo người dùng
                     </button>
                 </div>
             </div>
+
 
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -147,37 +159,8 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
                     </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">admin</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">admin@gmail.com</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                                        ADMIN
-                                    </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors duration-200">Xem</button>
-                            <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs transition-colors duration-200">Sửa</button>
-                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors duration-200">Xóa</button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">user1</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">user1@mail.com</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                        CUSTOMER
-                                    </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors duration-200">Xem</button>
-                            <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs transition-colors duration-200">Sửa</button>
-                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors duration-200">Xóa</button>
-                        </td>
-                    </tr>
+                    <tbody  id="userTableBody"  class="bg-white divide-y divide-gray-200">
+
                     </tbody>
                 </table>
             </div>
@@ -186,5 +169,9 @@
 </div>
 
 </body>
+<script src="/assets/js/dashboard.js"></script>
+<script src="/assets/js/user.js"></script>
+<script src="/assets/js/user-level.js"></script>
+<script src="/assets/js/vip-detail.js"></script>
 </html>
 

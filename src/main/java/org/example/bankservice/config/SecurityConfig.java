@@ -44,14 +44,17 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/login", "/register","/forgot", "/",
-                                "/home", "/dashboard",
-                                "/assets/**", "/css/**", "/js/**", "/images/**",
+                                "/home", "/dashboard","/account","/createCard","/user","/vip-detail","/user-level",
+                                "/assets/**", "/css/**", "/js/**", "/images/**","/favicon.ico",
                                 "/oauth2/**",
                                 "/WEB-INF/views/**"
                         ).permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/account/**").permitAll()
+                        .requestMatchers("/api/card/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/userlevel/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e

@@ -1,0 +1,17 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="true" %>
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4">Thông tin Tài khoản</h2>
+    <div id="accountInfo" class="space-y-2 text-gray-700">
+        <!-- Thông tin account sẽ load bằng JS -->
+    </div>
+
+    <h3 class="text-xl font-bold mt-6">Danh sách thẻ của bạn</h3>
+    <button onclick="createCard()"
+            class="mt-2 mb-4 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500">
+        Create card
+    </button>
+    <div id="cardList" class="space-y-3">
+        <!-- Danh sách thẻ sẽ load bằng JS -->
+    </div>
+</div>

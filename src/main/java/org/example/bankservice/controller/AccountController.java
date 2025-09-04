@@ -19,18 +19,19 @@ public class AccountController {
         return ResponseEntity.ok("Thêm thành công! " + account);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> fingById(@PathVariable Long accountId){
-        return ResponseEntity.ok(accountService.findById(accountId));
+    @GetMapping("/{accountId}")
+    public ResponseEntity<Account> getAccount(@PathVariable Long accountId){
+        Account account = accountService.getAccountById(accountId);
+        return ResponseEntity.ok(account);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{accountId}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AccountDTO accountDTO){
         Account account = accountService.update(id,accountDTO);
         return ResponseEntity.ok("Sửa thành công! " + account);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{accountId}")
     public ResponseEntity<?> delete(@PathVariable Long accountId){
         accountService.delete(accountId);
         return ResponseEntity.ok("Xóa thành công! "+ accountId);

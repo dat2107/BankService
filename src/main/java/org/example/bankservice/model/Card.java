@@ -1,5 +1,6 @@
 package org.example.bankservice.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class Card {
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)
+    @JsonBackReference
     private Account account;
 
     @Enumerated(EnumType.STRING)

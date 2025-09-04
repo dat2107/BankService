@@ -3,6 +3,7 @@ package org.example.bankservice.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.example.bankservice.model.Account;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,12 +30,13 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(UserDetails userDetails,Long userId) {
+    public String generateToken(UserDetails userDetails, Account account) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        claims.put("userId", userId);
+        //claims.put("userId", userId);
+        claims.put("accountId", account.getAccountId());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
@@ -71,9 +73,20 @@ public class JwtUtil {
             return true;
         } catch (JwtException e) {
             // Log cụ thể nếu muốn: e.printStackTrace();
+            System.err.println("❌ JWT validation failed: " + e.getMessage());
             return false;
         }
     }
+
+    public Long extractAccountId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("accountId", Long.class);
+    }
+
     @PostConstruct
     public void testConfig() {
         System.out.println("✅ JWT_SECRET = " + jwtSecret);

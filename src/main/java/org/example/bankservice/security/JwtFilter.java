@@ -35,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 || path.startsWith("/css")
                 || path.startsWith("/js")
                 || path.startsWith("/assets")
+                || path.startsWith("/favicon.ico")
                 || path.endsWith(".jsp")
                 || path.startsWith("/WEB-INF")) {
             System.out.println(">>> Bỏ qua filter vì là auth path");

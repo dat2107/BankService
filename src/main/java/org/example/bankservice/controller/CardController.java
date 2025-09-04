@@ -16,9 +16,11 @@ public class CardController {
     private CardService cardService;
 
     @PostMapping
-    public ResponseEntity<?> create(CardDTO cardDTO){
-        Card card = cardService.create(cardDTO);
-        return ResponseEntity.ok("Tạo thẻ thành công "+ card);
+    public ResponseEntity<?> create(@RequestBody CardDTO cardDTO,
+                                    @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7); // Bỏ "Bearer "
+        Card card = cardService.create(cardDTO, token);
+        return ResponseEntity.ok(card);
     }
 
     @GetMapping("/account/{accountId}")

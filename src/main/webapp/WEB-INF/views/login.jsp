@@ -126,6 +126,15 @@
             eyeIcon.textContent = '👁️';
         }
     }
+    function parseJwt(token) {
+        console.log(token)
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
 
     // Submit login
     document.getElementById("loginForm").addEventListener("submit", async function (event) {
@@ -134,15 +143,21 @@
         const password = document.getElementById("password").value;
 
         try {
-            const response = await fetch("/login", {
+            const response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({username, password})
             });
 
             if (response.ok) {
-                const token = await response.text();
+                console.log("respone ok")
+                const token = await response.text();   // BE trả về token dạng string
                 localStorage.setItem("token", token);
+                const payload = parseJwt(token);
+                console.log("payload:" + payload)
+                //localStorage.setItem("userId", payload.userId);
+                localStorage.setItem("accountId", payload.accountId);
+                localStorage.setItem("role", payload.role);
 
                 // gọi /me để lấy role
                 const meResponse = await fetch("/api/auth/me", {

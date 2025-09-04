@@ -7,6 +7,7 @@ import org.example.bankservice.model.Card;
 import org.example.bankservice.repository.AccountRepository;
 import org.example.bankservice.repository.BalanceRepository;
 import org.example.bankservice.repository.CardRepository;
+import org.example.bankservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,15 +23,19 @@ public class CardService {
     private AccountRepository accountRepository;
     @Autowired
     private BalanceRepository balanceRepository;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    public Card create(CardDTO cardDTO){
-        Card card = new Card();
-        Account account = accountRepository.findById(cardDTO.getAccountId())
+    public Card create(CardDTO cardDTO, String token) {
+        Long accountId = jwtUtil.extractAccountId(token);
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        Card card = new Card();
         card.setAccount(account);
-        card.setCardType(cardDTO.getCardtype());
+        card.setCardType(cardDTO.getCardType());
         card.setExpiryDate(cardDTO.getExpiryDate());
         card.setStatus(cardDTO.getStatus());
+
         return cardRepository.save(card);
     }
 
