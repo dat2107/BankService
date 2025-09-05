@@ -99,4 +99,23 @@ public class ViewAuthController {
         return "vip-detail"; // Spring sẽ map tới /WEB-INF/views/vip-detail.jsp
     }
 
+    @GetMapping("/updateUser")
+    public String updateUserPage() {
+        return "updateUser";
+    }
+
+    @GetMapping("/userDetail")
+    public String userDetailPage(){
+        return "userDetail";
+    }
+
+    @GetMapping("/cardManager")
+    public String cardManagerPage(){
+        return "cardManager";
+    }
+
+    @GetMapping("/cardDetail")
+    public String cardDetailPage(){
+        return "cardDetail";
+    }
 }

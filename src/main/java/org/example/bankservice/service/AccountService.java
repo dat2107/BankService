@@ -1,14 +1,8 @@
 package org.example.bankservice.service;
 
 import org.example.bankservice.dto.AccountDTO;
-import org.example.bankservice.model.Account;
-import org.example.bankservice.model.Balance;
-import org.example.bankservice.model.Card;
-import org.example.bankservice.model.User;
-import org.example.bankservice.repository.AccountRepository;
-import org.example.bankservice.repository.BalanceRepository;
-import org.example.bankservice.repository.CardRepository;
-import org.example.bankservice.repository.UserRepository;
+import org.example.bankservice.model.*;
+import org.example.bankservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +20,8 @@ public class AccountService {
     private CardRepository cardRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    UserLevelRepository userLevelRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -52,15 +48,18 @@ public class AccountService {
     public Account update(Long id,AccountDTO accountDTO){
         return accountRepository.findById(id)
                 .map(existing -> {
-//                    if (accountDTO.getCustomerName() != null && !accountDTO.getCustomerName().isEmpty()){
-//                        existing.setCustomerName(accountDTO.getCustomerName());
-//                    }
-                    if (accountDTO.getEmail() != null && !accountDTO.getEmail().isEmpty()){
-                        existing.setEmail(accountDTO.getEmail());
+                    if (accountDTO.getCustomerName() != null && !accountDTO.getCustomerName().isEmpty()){
+                        existing.setCustomerName(accountDTO.getCustomerName());
                     }
                     if (accountDTO.getPhoneNumber() != null && !accountDTO.getPhoneNumber().isEmpty()){
                         existing.setPhoneNumber(accountDTO.getPhoneNumber());
                     }
+                    if (accountDTO.getUserLevelId() != null) {   // ✅ lấy id
+                        UserLevel level = userLevelRepository.findById(accountDTO.getUserLevelId())
+                                .orElseThrow(() -> new RuntimeException("Không tìm thấy Level với id: " + accountDTO.getUserLevelId()));
+                        existing.setUserLevel(level);   // ✅ gán entity
+                    }
+
                     return accountRepository.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Không tìm người đề xuất với id: " + id));
@@ -92,5 +91,9 @@ public class AccountService {
     public Account getAccountById(Long id) {
         return accountRepository.findByAccountId(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    public List<Account> getAllAccount(){
+        return accountRepository.findAll();
     }
 }

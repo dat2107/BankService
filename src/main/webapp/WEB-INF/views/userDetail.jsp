@@ -1,0 +1,51 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Detail User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-7xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-gray-600">
+        <a href="/dashboard" class="text-blue-600 hover:underline">Dashboard</a> /
+        <a href="/user" class="text-blue-600 hover:underline">User</a> /
+        <span class="text-gray-800 font-semibold">Detail</span>
+    </nav>
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold mb-6">Detail User</h1>
+
+    <div class="grid grid-cols-3 gap-6">
+        <!-- User Information -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">User Information</h2>
+            <div class="space-y-2 text-gray-700">
+                <p><span class="font-semibold">ID:</span> <span id="userId"></span></p>
+                <p><span class="font-semibold">Email:</span> <span id="userEmail"></span></p>
+                <p><span class="font-semibold">Full Name:</span> <span id="userName"></span></p>
+                <p><span class="font-semibold">Phone:</span> <span id="userPhone"></span></p>
+            </div>
+            <button onclick="navigate(event, '/user')"
+                    class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Back
+            </button>
+        </div>
+
+        <!-- User Cards -->
+        <div class="col-span-2 bg-white shadow-lg rounded-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">User Cards</h2>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Create Card</button>
+            </div>
+
+            <div id="cardsContainer" class="grid grid-cols-2 gap-4">
+                <!-- Cards sẽ render ở đây -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/userDetail.js"></script>
+</body>
+</html>

@@ -32,9 +32,9 @@
             <thead class="bg-gray-100">
             <tr>
                 <th class="px-4 py-2 border">ID</th>
-                <th class="px-4 py-2 border">User name</th>
+                <th class="px-4 py-2 border">Customer name</th>
                 <th class="px-4 py-2 border">Email</th>
-                <th class="px-4 py-2 border">ROLE</th>
+                <th class="px-4 py-2 border">Phone</th>
                 <th class="px-4 py-2 border">Level</th>
                 <th class="px-4 py-2 border">Actions</th>
             </tr>

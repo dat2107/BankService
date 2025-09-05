@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/login", "/register","/forgot", "/",
                                 "/home", "/dashboard","/account","/createCard","/user","/vip-detail","/user-level",
+                                "/updateUser","/userDetail","/cardManager","/cardDetail",
                                 "/assets/**", "/css/**", "/js/**", "/images/**","/favicon.ico",
                                 "/oauth2/**",
                                 "/WEB-INF/views/**"
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/account/**").permitAll()
                         .requestMatchers("/api/card/**").permitAll()
+                        .requestMatchers("/api/balance/**").permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/userlevel/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

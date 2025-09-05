@@ -23,6 +23,19 @@ public class CardController {
         return ResponseEntity.ok(card);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Card>> getAllCard(){
+        List<Card> cards = cardService.getAllCard();
+        return ResponseEntity.ok(cards);
+    }
+
+    @GetMapping("/{cardId}")
+    public ResponseEntity<Card> getCardById(@PathVariable Long cardId) {
+        Card card = cardService.getById(cardId);
+        return ResponseEntity.ok(card);
+    }
+
+
     @GetMapping("/account/{accountId}")
     public ResponseEntity<?> getCardsByAccount(@PathVariable Long accountId) {
         List<Card> cards = cardService.getByAccountId(accountId);

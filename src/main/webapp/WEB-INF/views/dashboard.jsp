@@ -57,7 +57,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <a href="cardManager" onclick="navigate(event, '/cardManager')"
+                       class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                         <span>💳</span>
                         <span class="font-medium">Thẻ ngân hàng</span>
                     </a>
@@ -171,7 +172,12 @@
 </body>
 <script src="/assets/js/dashboard.js"></script>
 <script src="/assets/js/user.js"></script>
+<script src="/assets/js/updateUser.js"></script>
+<script src="/assets/js/userDetail.js"></script>
+<script src="/assets/js/cardManager.js"></script>
+<script src="/assets/js/cardDetail.js"></script>
 <script src="/assets/js/user-level.js"></script>
 <script src="/assets/js/vip-detail.js"></script>
+<script src="/assets/js/userDetail.js"></script>
 </html>
 

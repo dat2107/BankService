@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/account")
 public class AccountController {
@@ -25,9 +27,15 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Account>> getAllAccount(){
+        List<Account> accounts = accountService.getAllAccount();
+        return ResponseEntity.ok(accounts);
+    }
+
     @PutMapping("/{accountId}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AccountDTO accountDTO){
-        Account account = accountService.update(id,accountDTO);
+    public ResponseEntity<?> update(@PathVariable Long accountId, @RequestBody AccountDTO accountDTO){
+        Account account = accountService.update(accountId,accountDTO);
         return ResponseEntity.ok("Sửa thành công! " + account);
     }
 

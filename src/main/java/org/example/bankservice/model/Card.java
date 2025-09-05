@@ -1,12 +1,17 @@
 package org.example.bankservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "card")
 public class Card {
     @Id
@@ -16,8 +21,11 @@ public class Card {
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"cards"})
     private Account account;
+
+    @Column(name = "card_number")
+        private String cardNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "card_type", columnDefinition = "ENUM('DEBIT','CREDIT')")
@@ -35,45 +43,5 @@ public class Card {
 
     public enum Status{
         ACTIVE,INACTIVE
-    }
-
-    public Long getCardId() {
-        return cardId;
-    }
-
-    public void setCardId(Long cardId) {
-        this.cardId = cardId;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public Type getCardType() {
-        return cardType;
-    }
-
-    public void setCardType(Type cardType) {
-        this.cardType = cardType;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 }

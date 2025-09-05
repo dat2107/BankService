@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Data
 public class CardDTO {
     private Long accountId;
+    private String cardNumber;
     private Card.Type cardType;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate expiryDate;
