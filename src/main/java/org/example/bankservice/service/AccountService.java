@@ -4,6 +4,10 @@ import org.example.bankservice.dto.AccountDTO;
 import org.example.bankservice.model.*;
 import org.example.bankservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +25,11 @@ public class AccountService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    UserLevelRepository userLevelRepository;
+    private UserLevelRepository userLevelRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @CachePut(value = "accounts", key = "#result.accountId")
     public Account create(AccountDTO accountDTO){
         if (userRepository.findByUsername(accountDTO.getUsername()).isPresent()) {
             throw new RuntimeException("Tên đăng nhập đã tồn tại");
@@ -42,9 +47,21 @@ public class AccountService {
         account.setEmail(accountDTO.getEmail());
         account.setPhoneNumber(accountDTO.getPhoneNumber());
         account.setUser(user);
+
+        Balance balance = new Balance();
+        balance.setAvailableBalance(BigDecimal.ZERO);
+        balance.setHoldBalance(BigDecimal.ZERO);
+        balance.setAccount(account);
+
+        account.setBalance(balance);
+
         return accountRepository.save(account);
     }
 
+    @Caching(
+            put = { @CachePut(value = "accounts", key = "#id") },
+            evict = { @CacheEvict(value = "accounts_all", allEntries = true) }
+    )
     public Account update(Long id,AccountDTO accountDTO){
         return accountRepository.findById(id)
                 .map(existing -> {
@@ -65,6 +82,10 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("Không tìm người đề xuất với id: " + id));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "accounts", key = "#accountId"),
+            @CacheEvict(value = "accounts_all", allEntries = true)
+    })
     public void delete(Long accountId){
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản!"));
@@ -83,16 +104,19 @@ public class AccountService {
         accountRepository.delete(account);
     }
 
+    @Cacheable(value = "accounts", key = "#accountId")
     public Account findById(Long accountId){
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy account với id: "+accountId));
     }
 
+    @Cacheable(value = "accounts", key = "#id")
     public Account getAccountById(Long id) {
         return accountRepository.findByAccountId(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
+    @Cacheable(value = "accounts_all")
     public List<Account> getAllAccount(){
         return accountRepository.findAll();
     }

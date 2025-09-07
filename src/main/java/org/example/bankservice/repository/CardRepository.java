@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
-    Optional<Card> findById(Long cardId);
     Boolean existsByAccount_AccountId(Long accountId);
     List<Card> findByAccount_AccountId(Long accountId);
-
+    Optional<Card> findByCardNumber(String cardNumber);
 }

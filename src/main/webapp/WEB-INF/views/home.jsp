@@ -167,5 +167,6 @@
 <script src="/assets/js/home.js"></script>
 <script src="/assets/js/account.js"></script>
 <script src="/assets/js/createCard.js"></script>
+<script src="/assets/js/transfer.js"></script>
 </body>
 </html>

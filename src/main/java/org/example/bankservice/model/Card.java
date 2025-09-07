@@ -35,7 +35,7 @@ public class Card {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "ENUM('ACTIVE','INACTIVE')")
-    private Status status;
+    private Status status = Status.ACTIVE;
 
     public enum Type{
         DEBIT,CREDIT

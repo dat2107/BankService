@@ -45,9 +45,21 @@ public class CardController {
         return ResponseEntity.ok(cards);
     }
 
+    @GetMapping("/number/{cardNumber}")
+    public ResponseEntity<Card> getByCardNumber(@PathVariable String cardNumber) {
+        return ResponseEntity.ok(cardService.getByCardNumber(cardNumber));
+    }
+
+    @PutMapping("/{cardId}/status")
+    public ResponseEntity<Card> updateStatus(@PathVariable Long cardId) {
+        return ResponseEntity.ok(cardService.updateStatus(cardId));
+    }
+
+
     @DeleteMapping("/{cardId}")
     public ResponseEntity<?> deleteCard(@PathVariable Long cardId) {
         cardService.deleteCard(cardId);
         return ResponseEntity.ok("Xóa thẻ thành công");
     }
+
 }

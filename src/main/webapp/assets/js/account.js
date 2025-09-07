@@ -46,8 +46,6 @@ async function loadAccount() {
                     <p><strong>Họ và tên:</strong> ${data.customerName ? data.customerName : 'N/A'}</p>
                     <p><strong>Email:</strong> ${data.email ? data.email : 'N/A'}</p>
                     <p><strong>Số điện thoại:</strong> ${data.phoneNumber ? data.phoneNumber : 'N/A'}</p>
-                    <p><strong>Tên người dùng:</strong> ${data.user?.username || 'N/A'}</p>
-                    <p><strong>Vai trò:</strong> ${getRoleDisplay(data.user?.role)}</p>         
                 `;
 
         } else {
@@ -61,13 +59,13 @@ async function loadAccount() {
                 cardHtml += `
                         <div class="border rounded p-3">
                             <p>
-                                <strong>Số thẻ:</strong> ${c.cardId} -
+                                <strong>Số thẻ:</strong> ${c.cardNumber} -
                                 <strong>Loại:</strong> ${c.cardType} -
                                 <strong>Số dư:</strong> ${data.balance?.availableBalance ?? 0} -
                                 <strong>Đang chờ xử lý:</strong> ${data.balance?.holdBalance ?? 0}
                             </p>
-                            <button onclick="transfer('${c.cardNumber}')"
-                                class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            <button onclick="navigate(event, '/transfer?cardId=${c.cardId}')"
+                                    class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                                 Chuyển khoản
                             </button>
                         </div>

@@ -118,4 +118,9 @@ public class ViewAuthController {
     public String cardDetailPage(){
         return "cardDetail";
     }
+
+    @GetMapping("/transfer")
+    public String transferPage(){
+        return "transfer";
+    }
 }

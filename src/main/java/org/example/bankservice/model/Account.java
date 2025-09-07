@@ -1,6 +1,7 @@
 package org.example.bankservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -31,6 +32,7 @@ public class Account {
     @JsonManagedReference
     private Balance balance;
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Card> cards = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "level_id", referencedColumnName = "id")

@@ -91,4 +91,19 @@ public class CardService {
 
         cardRepository.delete(card);
     }
+
+    // 🔹 1. Tìm thẻ theo số thẻ
+    public Card getByCardNumber(String cardNumber) {
+        return cardRepository.findByCardNumber(cardNumber)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với số: " + cardNumber));
+    }
+
+    // 🔹 2. Cập nhật trạng thái thẻ
+    public Card updateStatus(Long cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với id = " + cardId));
+
+        card.setStatus(Card.Status.INACTIVE); // giả sử field `status` trong Card là String (ACTIVE/INACTIVE)
+        return cardRepository.save(card);
+    }
 }

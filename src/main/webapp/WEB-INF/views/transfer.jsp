@@ -1,0 +1,86 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Chuyển khoản</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/transfer.js"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-5xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-6 text-center">Chuyển khoản</h2>
+
+    <div class="grid grid-cols-2 gap-6">
+        <!-- Thông tin thẻ nguồn -->
+        <div class="border rounded-lg p-4 bg-gray-50">
+            <h3 class="text-lg font-semibold mb-4">Thông tin thẻ của bạn</h3>
+            <p><b>Số thẻ:</b> <span id="fromCardNumber"></span></p>
+            <p><b>Loại thẻ:</b> <span id="fromCardType"></span></p>
+            <p><b>Số dư:</b> <span id="fromBalance"></span></p>
+            <p><b>Đang chờ xử lý:</b> <span id="fromHold"></span></p>
+
+            <button onclick="history.back()"
+                    class="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">
+                Trở lại
+            </button>
+        </div>
+
+        <!-- Thông tin người nhận -->
+        <div class="border rounded-lg p-4">
+            <h3 class="text-lg font-semibold mb-4">Thông tin người nhận</h3>
+
+            <!-- B1: form tìm kiếm -->
+            <form id="searchReceiverForm" class="space-y-4">
+                <div>
+                    <label class="block font-medium">Số thẻ:</label>
+                    <input type="text" id="toCardNumber"
+                           class="w-full px-3 py-2 border rounded"
+                           placeholder="Nhập số thẻ người nhận">
+                </div>
+                <button type="submit"
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+                    Tìm kiếm
+                </button>
+            </form>
+
+            <!-- B2: thông tin người nhận + nhập số tiền -->
+            <div id="receiverInfo" class="hidden mt-4">
+                <p><b>Số thẻ người nhận:</b> <span id="receiverCard"></span></p>
+                <p><b>Tên người nhận:</b> <span id="receiverName"></span></p>
+
+                <form id="transferForm" class="mt-4 space-y-3">
+                    <div>
+                        <label class="block font-medium">Số tiền</label>
+                        <input type="number" id="amount"
+                               class="w-full px-3 py-2 border rounded"
+                               placeholder="Nhập số tiền">
+                    </div>
+                    <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                        Xác nhận chuyển khoản
+                    </button>
+                </form>
+            </div>
+
+            <!-- B3: nhập OTP -->
+            <div id="otpSection" class="hidden mt-4">
+                <form id="otpForm" class="space-y-3">
+                    <input type="hidden" id="transactionId">
+                    <div>
+                        <label class="block font-medium">Mã OTP</label>
+                        <input type="text" id="otpCode"
+                               class="w-full px-3 py-2 border rounded"
+                               placeholder="Nhập mã OTP">
+                    </div>
+                    <button type="submit"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                        Xác nhận OTP
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
