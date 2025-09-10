@@ -1,8 +1,9 @@
 package org.example.bankservice.service;
 
-import org.example.bankservice.dto.AccountDTO;
+import org.example.bankservice.dto.*;
 import org.example.bankservice.model.*;
 import org.example.bankservice.repository.*;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -38,7 +40,7 @@ public class AccountService {
         user.setUsername(accountDTO.getUsername());
         user.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
         user.setRole("USER"); // Mặc định là CUSTOMER
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
         if (accountRepository.findByEmail(accountDTO.getEmail()).isPresent()){
             throw new RuntimeException("email đã tồn tại");
         }
@@ -46,7 +48,7 @@ public class AccountService {
         account.setCustomerName(accountDTO.getCustomerName());
         account.setEmail(accountDTO.getEmail());
         account.setPhoneNumber(accountDTO.getPhoneNumber());
-        account.setUser(user);
+        account.setUser(savedUser);
 
         Balance balance = new Balance();
         balance.setAvailableBalance(BigDecimal.ZERO);
@@ -106,18 +108,102 @@ public class AccountService {
 
     @Cacheable(value = "accounts", key = "#accountId")
     public Account findById(Long accountId){
-        return accountRepository.findById(accountId)
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy account với id: "+accountId));
+
+        // ép load thẻ trước khi đưa vào cache
+        account.getCards().size();
+
+        return account;
     }
 
+
+//    @Cacheable(value = "accounts", key = "#id")
+//    public Account getAccountById(Long id) {
+//        Account acc = accountRepository.findByAccountId(id)
+//                .orElseThrow(() -> new RuntimeException("Account not found"));
+//
+//        // ⚡ ép load thẻ trước khi cache
+//        acc.getCards().size();
+//
+//        return acc;
+//    }
+
+//    @Cacheable(value = "accounts", key = "#id")
+//    public Account getAccountById(Long id) {
+//        Account acc = accountRepository.findByIdWithCards(id)
+//                .orElseThrow(() -> new RuntimeException("Account not found"));
+//        acc.getCards().size();
+//        System.out.println(">>> Cards size = " + acc.getCards().size()); // Debug
+//        return acc;
+//    }
     @Cacheable(value = "accounts", key = "#id")
-    public Account getAccountById(Long id) {
-        return accountRepository.findByAccountId(id)
+    public AccountResponseDTO getAccountById(Long id) {
+        Account acc = accountRepository.findByIdWithCards(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        // map sang DTO
+        return mapToDTO(acc);
     }
+
+    private AccountResponseDTO mapToDTO(Account acc) {
+        AccountResponseDTO dto = new AccountResponseDTO();
+        dto.setAccountId(acc.getAccountId());
+        dto.setCustomerName(acc.getCustomerName());
+        dto.setEmail(acc.getEmail());
+        dto.setPhoneNumber(acc.getPhoneNumber());
+
+        // balance
+        if (acc.getBalance() != null) {
+            BalanceDTO balanceDTO = new BalanceDTO();
+            balanceDTO.setAccountId(acc.getBalance().getAccount().getAccountId());
+            balanceDTO.setAvailableBalance(acc.getBalance().getAvailableBalance());
+            balanceDTO.setHoldBalance(acc.getBalance().getHoldBalance());
+            dto.setBalance(balanceDTO);
+        }
+
+        // cards
+        List<CardDTO> cardDTOs = acc.getCards().stream().map(card -> {
+            CardDTO c = new CardDTO();
+            c.setAccountId(card.getAccount().getAccountId());
+            c.setCardId(card.getCardId());
+            c.setCardNumber(card.getCardNumber());
+            c.setCardType(card.getCardType());
+            c.setExpiryDate(card.getExpiryDate());
+            c.setStatus(card.getStatus());
+            return c;
+        }).collect(Collectors.toList());
+        dto.setCards(cardDTOs);
+
+        // user level
+        if (acc.getUserLevel() != null) {
+            UserLevelDTO lvl = new UserLevelDTO();
+            lvl.setLevelName(acc.getUserLevel().getLevelName());
+            lvl.setCardLimit(acc.getUserLevel().getCardLimit());
+            lvl.setDailyTransferLimit(acc.getUserLevel().getDailyTransferLimit());
+            dto.setUserLevel(lvl);
+        }
+
+        return dto;
+    }
+
+//    @Cacheable(value = "accounts_all")
+//    public List<Account> getAllAccount(){
+//        List<Account> list = accountRepository.findAll();
+//        // ⚡ ép load thẻ cho từng account (nếu cần)
+//        list.forEach(a -> a.getCards().size());
+//        return list;
+//    }
 
     @Cacheable(value = "accounts_all")
-    public List<Account> getAllAccount(){
-        return accountRepository.findAll();
+    public List<AccountResponseDTO> getAllAccount() {
+        List<Account> accounts = accountRepository.findAll();
+        // ép load thẻ
+        accounts.forEach(a -> a.getCards().size());
+
+        return accounts.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
+
+
 }

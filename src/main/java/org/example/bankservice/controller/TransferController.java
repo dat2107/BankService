@@ -5,6 +5,7 @@ import org.example.bankservice.dto.TransferDTO;
 import org.example.bankservice.dto.OtpConfirmDTO;
 import org.example.bankservice.model.Transaction;
 import org.example.bankservice.service.TransferService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,8 @@ import java.util.Map;
 @RequestMapping("/api/transfer")
 @RequiredArgsConstructor
 public class TransferController {
-
-    private final TransferService transferService;
+    @Autowired
+    private TransferService transferService;
 
     /**
      * B1: User tạo yêu cầu chuyển khoản -> sinh OTP gửi email
@@ -39,9 +40,6 @@ public class TransferController {
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmOtp(@RequestBody OtpConfirmDTO dto) {
         Transaction tx = transferService.confirmOtp(dto);
-        return ResponseEntity.ok(
-                "Giao dịch #" + tx.getTransactionId() +
-                        " thành công. Số tiền đã chuyển: " + tx.getAmount()
-        );
+        return ResponseEntity.ok(tx);
     }
 }

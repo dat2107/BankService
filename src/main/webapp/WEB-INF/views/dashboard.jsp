@@ -64,7 +64,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <a href="transaction" onclick="navigate(event,'/transaction')"
+                       class="flex items-center space-x-3 text-gray-700 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                         <span>💰</span>
                         <span class="font-medium">Giao dịch</span>
                     </a>
@@ -179,5 +180,6 @@
 <script src="/assets/js/user-level.js"></script>
 <script src="/assets/js/vip-detail.js"></script>
 <script src="/assets/js/userDetail.js"></script>
+<script src="/assets/js/transaction.js"></script>
 </html>
 

@@ -10,6 +10,7 @@ public class TransactionDTO {
     private Long transactionId;
     private String fromCardNumber;
     private String toCardNumber;
+    private String type;
     private BigDecimal amount;
     private String status;
     private LocalDateTime createdAt;

@@ -31,13 +31,22 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private TransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TransactionStatus status;
 
     private LocalDateTime createdAt;
 
     public enum TransactionStatus {
         PENDING,        // mới tạo, chờ nhập OTP
+        WAITING_APPROVAL,
         SUCCESS,        // admin duyệt thành công
         FAILED          // OTP sai/hết hạn hoặc admin từ chối
+    }
+
+    public enum TransactionType{
+        DEPOSIT,WITHDRAW,TRANSFER
     }
 }

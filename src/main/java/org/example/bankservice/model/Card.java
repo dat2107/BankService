@@ -22,6 +22,7 @@ public class Card {
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)
     @JsonIgnoreProperties({"cards"})
+//    @JsonBackReference
     private Account account;
 
     @Column(name = "card_number")

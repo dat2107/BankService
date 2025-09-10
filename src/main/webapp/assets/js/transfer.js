@@ -104,8 +104,8 @@ document.addEventListener("pageLoaded", async (e) => {
             }
 
             const result = await resConfirm.json();
-            alert("Chuyển khoản thành công! Mã giao dịch: " + result.transactionId);
-            window.location.href = "/account";
+            alert("OTP hợp lệ! Giao dịch đang chờ Admin duyệt. Mã giao dịch: " + result.transactionId);
+            window.location.href = "/home";
         });
 
     } catch (err) {

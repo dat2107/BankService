@@ -123,4 +123,9 @@ public class ViewAuthController {
     public String transferPage(){
         return "transfer";
     }
+
+    @GetMapping("/transaction")
+    public String transactionPage(){
+        return "transaction";
+    }
 }

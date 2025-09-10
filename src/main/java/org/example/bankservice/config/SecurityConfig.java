@@ -46,7 +46,7 @@ public class SecurityConfig {
                                 "/login", "/register","/forgot", "/",
                                 "/home", "/dashboard","/account","/createCard","/user","/vip-detail","/user-level",
                                 "/updateUser","/userDetail","/cardManager","/cardDetail",
-                                "/transfer",
+                                "/transfer","/transaction",
                                 "/assets/**", "/css/**", "/js/**", "/images/**","/favicon.ico",
                                 "/oauth2/**",
                                 "/WEB-INF/views/**"
@@ -57,8 +57,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/card/**").permitAll()
                         .requestMatchers("/api/balance/**").permitAll()
                         .requestMatchers("/api/transfer/**").hasRole("USER")
+                        .requestMatchers("/api/transaction/**").permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/userlevel/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/transactions/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e

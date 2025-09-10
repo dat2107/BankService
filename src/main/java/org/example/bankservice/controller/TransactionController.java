@@ -4,82 +4,86 @@ import lombok.RequiredArgsConstructor;
 import org.example.bankservice.dto.TransactionDTO;
 import org.example.bankservice.model.Transaction;
 import org.example.bankservice.repository.TransactionRepository;
+import org.example.bankservice.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/transaction")
 @RequiredArgsConstructor
 public class TransactionController {
+    @Autowired
+    private TransactionService transactionService;
 
-    private final TransactionRepository transactionRepo;
+    @Autowired
+    private TransactionRepository transactionRepo;
 
     /**
      * Lấy tất cả giao dịch (Admin)
-     * Có thể filter theo status: /api/transactions?status=SUCCESS
+     * Có thể filter theo status: /api/transaction?status=SUCCESS
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<TransactionDTO>> getAll(
+    public ResponseEntity<Page<TransactionDTO>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "7") int size,
             @RequestParam(required = false) String status) {
-        List<Transaction> transactions = transactionRepo.findAll();
-
-        if (status != null) {
-            transactions = transactions.stream()
-                    .filter(tx -> tx.getStatus().name().equalsIgnoreCase(status))
-                    .toList();
-        }
-
-        return ResponseEntity.ok(transactions.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(transactionService.getAll(status, page, size));
     }
 
     /**
      * Lấy giao dịch theo accountId (User)
      */
     @GetMapping("/account/{accountId}")
-    public ResponseEntity<List<TransactionDTO>> getByAccount(@PathVariable Long accountId) {
-        List<Transaction> transactions = transactionRepo.findAll().stream()
-                .filter(tx ->
-                        tx.getFromCard().getAccount().getAccountId().equals(accountId) ||
-                                tx.getToCard().getAccount().getAccountId().equals(accountId)
-                )
-                .toList();
-
-        return ResponseEntity.ok(transactions.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList()));
+    public ResponseEntity<Page<TransactionDTO>> getByAccount(
+            @PathVariable Long accountId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "7") int size) {
+        return ResponseEntity.ok(transactionService.getByAccount(accountId, page, size));
     }
 
     /**
      * Lấy giao dịch theo cardId (User)
      */
     @GetMapping("/card/{cardId}")
-    public ResponseEntity<List<TransactionDTO>> getByCard(@PathVariable Long cardId) {
-        List<Transaction> transactions = transactionRepo.findAll().stream()
-                .filter(tx ->
-                        tx.getFromCard().getCardId().equals(cardId) ||
-                                tx.getToCard().getCardId().equals(cardId)
-                )
-                .toList();
-
-        return ResponseEntity.ok(transactions.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList()));
+    public ResponseEntity<Page<TransactionDTO>> getByCard(
+            @PathVariable Long cardId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "7") int size) {
+        return ResponseEntity.ok(transactionService.getByCard(cardId, page, size));
     }
 
-    // Convert Entity -> DTO
-    private TransactionDTO toDto(Transaction tx) {
-        TransactionDTO dto = new TransactionDTO();
-        dto.setTransactionId(tx.getTransactionId());
-        dto.setFromCardNumber(tx.getFromCard().getCardNumber());
-        dto.setToCardNumber(tx.getToCard().getCardNumber());
-        dto.setAmount(tx.getAmount());
-        dto.setStatus(tx.getStatus().name());
-        dto.setCreatedAt(tx.getCreatedAt());
-        return dto;
+
+    /**
+     * Cập nhật trạng thái giao dịch
+     */
+    @PutMapping("/{id}/status")
+    public ResponseEntity<TransactionDTO> updateStatus(
+            @PathVariable Long id,
+            @RequestBody TransactionDTO request) {
+        return ResponseEntity.ok(transactionService.updateStatus(id, request.getStatus()));
+    }
+
+    /**
+     * Lấy toàn bộ giao dịch (admin xem)
+     */
+//    @GetMapping
+//    public ResponseEntity<List<Transaction>> getAll() {
+//        return ResponseEntity.ok(transactionRepo.findAll());
+//    }
+
+    /**
+     * Xem chi tiết 1 giao dịch
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Transaction> getOne(@PathVariable Long id) {
+        return transactionRepo.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

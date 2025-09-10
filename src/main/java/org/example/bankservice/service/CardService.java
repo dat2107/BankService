@@ -9,7 +9,9 @@ import org.example.bankservice.repository.BalanceRepository;
 import org.example.bankservice.repository.CardRepository;
 import org.example.bankservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
@@ -26,6 +28,8 @@ public class CardService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Transactional
+    @CacheEvict(value = {"accounts", "cards"}, allEntries = true)
     public Card create(CardDTO cardDTO, String token) {
         Long accountId = jwtUtil.extractAccountId(token);
         Account account = accountRepository.findById(accountId)

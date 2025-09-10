@@ -32,7 +32,7 @@ public class Account {
     @JsonManagedReference
     private Balance balance;
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference
     private List<Card> cards = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "level_id", referencedColumnName = "id")
