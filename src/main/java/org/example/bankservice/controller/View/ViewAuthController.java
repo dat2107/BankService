@@ -64,11 +64,6 @@ public class ViewAuthController {
         return "dashboard";
     }
 
-    @GetMapping("/dashboardContent")
-    public String dashboardContent() {
-        return "dashboardContent";  // /WEB-INF/views/dashboardContent.jsp
-    }
-
     @GetMapping("/forgot")
     public String showForgotform(){
         return "forgot";
