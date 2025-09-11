@@ -2,6 +2,7 @@ package org.example.bankservice.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.bankservice.dto.AccountDTO;
+import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.UserDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.service.AccountService;
@@ -25,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AccountDTO accountDTO){
-        Account account = accountService.create(accountDTO);
+        AccountResponseDTO account = accountService.create(accountDTO);
         return ResponseEntity.ok("Đăng ký thành công cho user: " + account.getCustomerName());
     }
 

@@ -2,10 +2,15 @@ package org.example.bankservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "balance")
 public class Balance {
     @Id
@@ -22,35 +27,5 @@ public class Balance {
     @Column(precision = 18, scale = 2)
     private BigDecimal holdBalance;
 
-    public Long getBalanceId() {
-        return balanceId;
-    }
-
-    public void setBalanceId(Long balanceId) {
-        this.balanceId = balanceId;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public BigDecimal getAvailableBalance() {
-        return availableBalance;
-    }
-
-    public void setAvailableBalance(BigDecimal availableBalance) {
-        this.availableBalance = availableBalance;
-    }
-
-    public BigDecimal getHoldBalance() {
-        return holdBalance;
-    }
-
-    public void setHoldBalance(BigDecimal holdBalance) {
-        this.holdBalance = holdBalance;
-    }
+    private LocalDateTime lastUpdated;
 }

@@ -1,6 +1,7 @@
 package org.example.bankservice.controller.View;
 
 import org.example.bankservice.dto.AccountDTO;
+import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.UserDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.service.AccountService;
@@ -47,7 +48,7 @@ public class ViewAuthController {
     @ResponseBody
     public ResponseEntity<?> register(@RequestBody AccountDTO accountDTO) {
         try {
-            Account account = accountService.create(accountDTO);
+            AccountResponseDTO account = accountService.create(accountDTO);
             return ResponseEntity.ok("Đăng ký thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

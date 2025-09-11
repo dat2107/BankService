@@ -13,6 +13,7 @@ public class PaymentRequest {
     private Long toAccountId;
     private BigDecimal amount;
     private String currency;
+    private String senderEmail;
 
     public PaymentRequest() {}
 

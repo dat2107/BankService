@@ -1,6 +1,7 @@
 package org.example.bankservice.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bankservice.dto.TransactionDTO;
 import org.example.bankservice.dto.TransferDTO;
 import org.example.bankservice.dto.OtpConfirmDTO;
 import org.example.bankservice.model.Transaction;
@@ -39,7 +40,7 @@ public class TransferController {
      */
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmOtp(@RequestBody OtpConfirmDTO dto) {
-        Transaction tx = transferService.confirmOtp(dto);
+        TransactionDTO tx = transferService.confirmOtp(dto);
         return ResponseEntity.ok(tx);
     }
 }

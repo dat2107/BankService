@@ -42,9 +42,9 @@ document.addEventListener("pageLoaded", async (e) => {
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-2 border text-center">${t.transactionId}</td>
                     <td class="px-4 py-2 border text-center">${t.fromCardNumber || "0"}</td>
-                    <td class="px-4 py-2 border text-center">${t.toCardNumber}</td>
+                    <td class="px-4 py-2 border text-center">${t.toCardNumber || "0"}</td>
                     <td class="px-4 py-2 border text-center">${Number(t.amount).toLocaleString()}</td>
-                    <td class="px-4 py-2 border text-center">${t.transactionType}</td>
+                    <td class="px-4 py-2 border text-center">${t.type}</td>
                     <td class="px-4 py-2 border text-center">
                         <span class="px-2 py-1 rounded text-white ${t.status === 'SUCCESS' ? 'bg-green-500' : (t.status === 'PENDING' ? 'bg-yellow-500' : 'bg-red-500')}">
                             ${t.status}
@@ -64,7 +64,11 @@ document.addEventListener("pageLoaded", async (e) => {
         try {
             const res = await fetch(`/api/admin/transactions/${id}/approve`, {
                 method: "POST",
-                headers: { "Authorization": "Bearer " + token }
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+
             });
             if (res.ok) {
                 alert("Duyệt thành công!");

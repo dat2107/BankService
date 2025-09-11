@@ -81,9 +81,10 @@ public class TransactionController {
      * Xem chi tiết 1 giao dịch
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Transaction> getOne(@PathVariable Long id) {
+    public ResponseEntity<TransactionDTO> getOne(@PathVariable Long id) {
         return transactionRepo.findById(id)
-                .map(ResponseEntity::ok)
+                .map(tx -> ResponseEntity.ok(transactionService.toDto(tx)))
                 .orElse(ResponseEntity.notFound().build());
     }
+
 }

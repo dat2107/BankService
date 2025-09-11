@@ -1,3 +1,4 @@
+let card = null;
 document.addEventListener("pageLoaded", async (e) => {
     // chỉ chạy khi load cardDetail.jsp
     if (!e.detail.includes("cardDetail")) return;
@@ -22,7 +23,7 @@ document.addEventListener("pageLoaded", async (e) => {
             return;
         }
 
-        const card = await res.json();
+        card = await res.json();
 
         document.getElementById("cardId").innerText = card.cardId;
         document.getElementById("cardNumber").innerText = card.cardNumber;
@@ -58,11 +59,16 @@ async function deposit() {
     if (!amount) return alert("Nhập số tiền");
     const token = localStorage.getItem("token");
 
-    const res = await fetch("/api/balance/deposit", {
+    // const res = await fetch("/api/balance/deposit", {
+    //     method: "POST",
+    //     headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+    //     body: JSON.stringify({ amount })
+    // });
+    const res = await fetch(`/api/balance/${card.account.accountId}/deposit?amount=${amount}&toCardId=${card.cardId}`, {
         method: "POST",
-        headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
-        body: JSON.stringify({ amount })
+        headers: { "Authorization": "Bearer " + token }
     });
+
 
     if (res.ok) {
         alert("Nạp tiền thành công");
@@ -78,11 +84,11 @@ async function withdraw() {
     if (!amount) return alert("Nhập số tiền");
     const token = localStorage.getItem("token");
 
-    const res = await fetch("/api/balance/withdraw", {
+    const res = await fetch(`/api/balance/${card.account.accountId}/withdraw?amount=${amount}&fromCardId=${card.cardId}`, {
         method: "POST",
-        headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
-        body: JSON.stringify({ amount })
+        headers: { "Authorization": "Bearer " + token }
     });
+
 
     if (res.ok) {
         alert("Rút tiền thành công");

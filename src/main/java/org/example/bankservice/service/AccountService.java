@@ -18,32 +18,29 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private BalanceRepository balanceRepository;
-    @Autowired
-    private CardRepository cardRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserLevelRepository userLevelRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Autowired private AccountRepository accountRepository;
+    @Autowired private BalanceRepository balanceRepository;
+    @Autowired private CardRepository cardRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private UserLevelRepository userLevelRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-    @CachePut(value = "accounts", key = "#result.accountId")
-    public Account create(AccountDTO accountDTO){
+    // 🔹 CREATE
+    @CachePut(value = "accounts_dto", key = "#result.accountId")
+    public AccountResponseDTO create(AccountDTO accountDTO){
         if (userRepository.findByUsername(accountDTO.getUsername()).isPresent()) {
             throw new RuntimeException("Tên đăng nhập đã tồn tại");
         }
-        User user = new User();// hoặc tự sinh theo logic khác
+        User user = new User();
         user.setUsername(accountDTO.getUsername());
         user.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
-        user.setRole("USER"); // Mặc định là CUSTOMER
+        user.setRole("USER");
         User savedUser = userRepository.save(user);
+
         if (accountRepository.findByEmail(accountDTO.getEmail()).isPresent()){
-            throw new RuntimeException("email đã tồn tại");
+            throw new RuntimeException("Email đã tồn tại");
         }
+
         Account account = new Account();
         account.setCustomerName(accountDTO.getCustomerName());
         account.setEmail(accountDTO.getEmail());
@@ -54,127 +51,107 @@ public class AccountService {
         balance.setAvailableBalance(BigDecimal.ZERO);
         balance.setHoldBalance(BigDecimal.ZERO);
         balance.setAccount(account);
-
         account.setBalance(balance);
 
-        return accountRepository.save(account);
+        Account saved = accountRepository.save(account);
+        return mapToDTO(saved);
     }
 
+    // 🔹 UPDATE
     @Caching(
-            put = { @CachePut(value = "accounts", key = "#id") },
-            evict = { @CacheEvict(value = "accounts_all", allEntries = true) }
+            put = { @CachePut(value = "accounts_dto", key = "#id") },
+            evict = { @CacheEvict(value = "accounts_all_dto", allEntries = true) }
     )
-    public Account update(Long id,AccountDTO accountDTO){
-        return accountRepository.findById(id)
-                .map(existing -> {
-                    if (accountDTO.getCustomerName() != null && !accountDTO.getCustomerName().isEmpty()){
-                        existing.setCustomerName(accountDTO.getCustomerName());
-                    }
-                    if (accountDTO.getPhoneNumber() != null && !accountDTO.getPhoneNumber().isEmpty()){
-                        existing.setPhoneNumber(accountDTO.getPhoneNumber());
-                    }
-                    if (accountDTO.getUserLevelId() != null) {   // ✅ lấy id
-                        UserLevel level = userLevelRepository.findById(accountDTO.getUserLevelId())
-                                .orElseThrow(() -> new RuntimeException("Không tìm thấy Level với id: " + accountDTO.getUserLevelId()));
-                        existing.setUserLevel(level);   // ✅ gán entity
-                    }
+    public AccountResponseDTO update(Long id, AccountDTO accountDTO){
+        Account existing = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy account với id: " + id));
 
-                    return accountRepository.save(existing);
-                })
-                .orElseThrow(() -> new RuntimeException("Không tìm người đề xuất với id: " + id));
+        if (accountDTO.getCustomerName() != null && !accountDTO.getCustomerName().isEmpty()){
+            existing.setCustomerName(accountDTO.getCustomerName());
+        }
+        if (accountDTO.getPhoneNumber() != null && !accountDTO.getPhoneNumber().isEmpty()){
+            existing.setPhoneNumber(accountDTO.getPhoneNumber());
+        }
+        if (accountDTO.getUserLevelId() != null) {
+            UserLevel level = userLevelRepository.findById(accountDTO.getUserLevelId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Level với id: " + accountDTO.getUserLevelId()));
+            existing.setUserLevel(level);
+        }
+
+        Account saved = accountRepository.save(existing);
+        return mapToDTO(saved);
     }
 
+    // 🔹 DELETE
     @Caching(evict = {
-            @CacheEvict(value = "accounts", key = "#accountId"),
-            @CacheEvict(value = "accounts_all", allEntries = true)
+            @CacheEvict(value = "accounts_dto", key = "#accountId"),
+            @CacheEvict(value = "accounts_all_dto", allEntries = true)
     })
     public void delete(Long accountId){
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản!"));
+
         List<Card> cards = cardRepository.findByAccount_AccountId(accountId);
-        for(Card s: cards){
-            Balance balance = balanceRepository.findByAccount_AccountId(accountId)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy số dư tài khoản!"));
-            if (balance.getAvailableBalance().compareTo(BigDecimal.ZERO) > 0 ||
-                    balance.getHoldBalance().compareTo(BigDecimal.ZERO) > 0) {
-                throw new RuntimeException("Không thể xóa tài khoản: Số dư tài khoản khác 0");
-            }
+        Balance balance = balanceRepository.findByAccount_AccountId(accountId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy số dư tài khoản!"));
+
+        if (balance.getAvailableBalance().compareTo(BigDecimal.ZERO) > 0 ||
+                balance.getHoldBalance().compareTo(BigDecimal.ZERO) > 0) {
+            throw new RuntimeException("Không thể xóa tài khoản: số dư khác 0");
         }
         if (!cards.isEmpty()) {
-            throw new RuntimeException("Cannot delete account: linked cards exist (even with zero balance)");
+            throw new RuntimeException("Không thể xóa tài khoản: còn liên kết thẻ");
         }
+
         accountRepository.delete(account);
     }
 
-    @Cacheable(value = "accounts", key = "#accountId")
-    public Account findById(Long accountId){
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy account với id: "+accountId));
-
-        // ép load thẻ trước khi đưa vào cache
-        account.getCards().size();
-
-        return account;
-    }
-
-
-//    @Cacheable(value = "accounts", key = "#id")
-//    public Account getAccountById(Long id) {
-//        Account acc = accountRepository.findByAccountId(id)
-//                .orElseThrow(() -> new RuntimeException("Account not found"));
-//
-//        // ⚡ ép load thẻ trước khi cache
-//        acc.getCards().size();
-//
-//        return acc;
-//    }
-
-//    @Cacheable(value = "accounts", key = "#id")
-//    public Account getAccountById(Long id) {
-//        Account acc = accountRepository.findByIdWithCards(id)
-//                .orElseThrow(() -> new RuntimeException("Account not found"));
-//        acc.getCards().size();
-//        System.out.println(">>> Cards size = " + acc.getCards().size()); // Debug
-//        return acc;
-//    }
-    @Cacheable(value = "accounts", key = "#id")
-    public AccountResponseDTO getAccountById(Long id) {
-        Account acc = accountRepository.findByIdWithCards(id)
+    // 🔹 GET BY ID
+    @Cacheable(value = "accounts_dto", key = "#accountId")
+    public AccountResponseDTO getAccountById(Long accountId) {
+        Account acc = accountRepository.findByIdWithCards(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-        // map sang DTO
         return mapToDTO(acc);
     }
 
-    private AccountResponseDTO mapToDTO(Account acc) {
+    // 🔹 GET ALL
+    @Cacheable(value = "accounts_all_dto")
+    public List<AccountResponseDTO> getAllAccount() {
+        return accountRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 🔹 MAPPER
+    public AccountResponseDTO mapToDTO(Account acc) {
         AccountResponseDTO dto = new AccountResponseDTO();
         dto.setAccountId(acc.getAccountId());
         dto.setCustomerName(acc.getCustomerName());
         dto.setEmail(acc.getEmail());
         dto.setPhoneNumber(acc.getPhoneNumber());
 
-        // balance
         if (acc.getBalance() != null) {
             BalanceDTO balanceDTO = new BalanceDTO();
-            balanceDTO.setAccountId(acc.getBalance().getAccount().getAccountId());
+            balanceDTO.setAccountId(acc.getAccountId());
             balanceDTO.setAvailableBalance(acc.getBalance().getAvailableBalance());
             balanceDTO.setHoldBalance(acc.getBalance().getHoldBalance());
             dto.setBalance(balanceDTO);
         }
 
-        // cards
-        List<CardDTO> cardDTOs = acc.getCards().stream().map(card -> {
-            CardDTO c = new CardDTO();
-            c.setAccountId(card.getAccount().getAccountId());
-            c.setCardId(card.getCardId());
-            c.setCardNumber(card.getCardNumber());
-            c.setCardType(card.getCardType());
-            c.setExpiryDate(card.getExpiryDate());
-            c.setStatus(card.getStatus());
-            return c;
-        }).collect(Collectors.toList());
-        dto.setCards(cardDTOs);
+        if (acc.getCards() != null) {
+            List<CardDTO> cardDTOs = acc.getCards().stream().map(card -> {
+                CardDTO c = new CardDTO();
+                //c.setAccountId(acc.getAccountId());
+                c.setCardId(card.getCardId());
+                c.setCardNumber(card.getCardNumber());
+                c.setCardType(card.getCardType());
+                c.setExpiryDate(card.getExpiryDate());
+                c.setStatus(card.getStatus());
+                return c;
+            }).collect(Collectors.toList());
+            dto.setCards(cardDTOs);
+        }
 
-        // user level
         if (acc.getUserLevel() != null) {
             UserLevelDTO lvl = new UserLevelDTO();
             lvl.setLevelName(acc.getUserLevel().getLevelName());
@@ -185,25 +162,5 @@ public class AccountService {
 
         return dto;
     }
-
-//    @Cacheable(value = "accounts_all")
-//    public List<Account> getAllAccount(){
-//        List<Account> list = accountRepository.findAll();
-//        // ⚡ ép load thẻ cho từng account (nếu cần)
-//        list.forEach(a -> a.getCards().size());
-//        return list;
-//    }
-
-    @Cacheable(value = "accounts_all")
-    public List<AccountResponseDTO> getAllAccount() {
-        List<Account> accounts = accountRepository.findAll();
-        // ép load thẻ
-        accounts.forEach(a -> a.getCards().size());
-
-        return accounts.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-
 }
+

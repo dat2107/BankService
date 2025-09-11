@@ -62,13 +62,14 @@ public class TransactionService {
     }
 
     // Convert Entity -> DTO
-    private TransactionDTO toDto(Transaction tx) {
+    public TransactionDTO toDto(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();
         dto.setTransactionId(tx.getTransactionId());
         dto.setFromCardNumber(tx.getFromCard() != null ? tx.getFromCard().getCardNumber() : null);
         dto.setToCardNumber(tx.getToCard() != null ? tx.getToCard().getCardNumber() : null);
         dto.setAmount(tx.getAmount());
         dto.setStatus(tx.getStatus().name());
+        dto.setType(tx.getType().name());
         dto.setCreatedAt(tx.getCreatedAt());
         return dto;
     }

@@ -1,6 +1,8 @@
 package org.example.bankservice.service;
 
+import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.CardDTO;
+import org.example.bankservice.dto.CardResponseDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.model.Balance;
 import org.example.bankservice.model.Card;
@@ -10,9 +12,9 @@ import org.example.bankservice.repository.CardRepository;
 import org.example.bankservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,11 +28,17 @@ public class CardService {
     @Autowired
     private BalanceRepository balanceRepository;
     @Autowired
+    private AccountService accountService;
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Transactional
-    @CacheEvict(value = {"accounts", "cards"}, allEntries = true)
-    public Card create(CardDTO cardDTO, String token) {
+    @Caching(evict = {
+            @CacheEvict(value = "accounts_dto", allEntries = true),       // clear cache account cụ thể
+            @CacheEvict(value = "accounts_all_dto", allEntries = true),   // clear danh sách accounts
+            @CacheEvict(value = "cards_dto", allEntries = true)           // clear danh sách thẻ (nếu có cache)
+    })
+    public CardResponseDTO create(CardDTO cardDTO, String token) {
         Long accountId = jwtUtil.extractAccountId(token);
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -42,7 +50,8 @@ public class CardService {
         String cardNumber = generateCardNumber();
         card.setCardNumber(cardNumber);
 
-        return cardRepository.save(card);
+        Card saved = cardRepository.save(card);
+        return mapToDTO(saved);
     }
 
     private String generateCardNumber() {
@@ -69,19 +78,33 @@ public class CardService {
         return (10 - (sum % 10)) % 10;
     }
 
-    public List<Card> getByAccountId(Long accountId){
-        return cardRepository.findByAccount_AccountId(accountId);
+    public List<CardResponseDTO> getByAccountId(Long accountId){
+        return cardRepository.findByAccount_AccountId(accountId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
-    public List<Card> getAllCard(){
-        return cardRepository.findAll();
+    public List<CardResponseDTO> getAllCard(){
+        return cardRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
-    public Card getById(Long cardId) {
-        return cardRepository.findById(cardId)
+
+    public CardResponseDTO getById(Long cardId) {
+        Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ"));
+        return mapToDTO(card); // ✅ khớp kiểu dữ liệu
     }
 
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "accounts_dto", allEntries = true),       // clear cache account cụ thể
+            @CacheEvict(value = "accounts_all_dto", allEntries = true),   // clear danh sách accounts
+            @CacheEvict(value = "cards_dto", allEntries = true)           // clear danh sách thẻ (nếu có cache)
+    })
     public void deleteCard(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ"));
@@ -97,17 +120,49 @@ public class CardService {
     }
 
     // 🔹 1. Tìm thẻ theo số thẻ
-    public Card getByCardNumber(String cardNumber) {
-        return cardRepository.findByCardNumber(cardNumber)
+    public CardResponseDTO getByCardNumber(String cardNumber) {
+        Card card = cardRepository.findByCardNumber(cardNumber)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với số: " + cardNumber));
+        return mapToDTO(card);
     }
 
-    // 🔹 2. Cập nhật trạng thái thẻ
-    public Card updateStatus(Long cardId) {
+
+//    // 🔹 2. Cập nhật trạng thái thẻ
+//    public Card updateStatus(Long cardId) {
+//        Card card = cardRepository.findById(cardId)
+//                .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với id = " + cardId));
+//
+//        card.setStatus(Card.Status.INACTIVE); // giả sử field `status` trong Card là String (ACTIVE/INACTIVE)
+//        return cardRepository.save(card);
+//    }
+
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "accounts_dto", allEntries = true),       // clear cache account cụ thể
+            @CacheEvict(value = "accounts_all_dto", allEntries = true),   // clear danh sách accounts
+            @CacheEvict(value = "cards_dto", allEntries = true)           // clear danh sách thẻ (nếu có cache)
+    })
+    public CardResponseDTO updateStatus(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với id = " + cardId));
 
-        card.setStatus(Card.Status.INACTIVE); // giả sử field `status` trong Card là String (ACTIVE/INACTIVE)
-        return cardRepository.save(card);
+        card.setStatus(Card.Status.INACTIVE);
+        Card updated = cardRepository.save(card);
+        return mapToDTO(updated);
+    }
+
+
+    private CardResponseDTO mapToDTO(Card card) {
+        CardResponseDTO dto = new CardResponseDTO();
+        dto.setCardId(card.getCardId());
+        dto.setCardNumber(card.getCardNumber());
+        dto.setCardType(card.getCardType().name());
+        dto.setStatus(card.getStatus().name());
+        dto.setExpiryDate(card.getExpiryDate());
+
+        AccountResponseDTO accDto = accountService.mapToDTO(card.getAccount());
+        dto.setAccount(accDto);
+
+        return dto;
     }
 }

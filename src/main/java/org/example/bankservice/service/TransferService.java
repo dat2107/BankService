@@ -2,6 +2,7 @@ package org.example.bankservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bankservice.dto.PaymentRequest;
+import org.example.bankservice.dto.TransactionDTO;
 import org.example.bankservice.dto.TransferDTO;
 import org.example.bankservice.dto.OtpConfirmDTO;
 import org.example.bankservice.model.*;
@@ -82,7 +83,7 @@ public class TransferService {
      * và chuyển tiền từ availableBalance -> holdBalance (người gửi)
      */
     @Transactional
-    public Transaction confirmOtp(OtpConfirmDTO dto) {
+    public TransactionDTO confirmOtp(OtpConfirmDTO dto) {
         OtpTransaction otpTx = otpRepo.findByTransaction_TransactionId(dto.getTransactionId());
         if (otpTx == null) throw new RuntimeException("Không tìm thấy OTP");
 
@@ -122,14 +123,14 @@ public class TransferService {
         tx.setStatus(Transaction.TransactionStatus.WAITING_APPROVAL);
         transactionRepo.save(tx);
 
-        return tx;
+        return toDto(tx);
     }
 
     /**
      * Bước 3a: Admin duyệt giao dịch
      */
     @Transactional
-    public Transaction approveTransaction(Long transactionId) {
+    public TransactionDTO approveTransaction(Long transactionId) {
         Transaction tx = transactionRepo.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy giao dịch"));
 
@@ -182,17 +183,20 @@ public class TransferService {
                 amount,
                 "VND"
         );
-        String url = "http://localhost:8081/api/payments";
+
+        payment.setSenderEmail(fromCard.getAccount().getEmail());
+
+        String url = "http://payment-service:8080/api/payments";
         restTemplate.postForEntity(url, payment, String.class);
 
-        return tx;
+        return toDto(tx);
     }
 
     /**
      * Bước 3b: Admin từ chối giao dịch
      */
     @Transactional
-    public Transaction rejectTransaction(Long transactionId) {
+    public TransactionDTO rejectTransaction(Long transactionId) {
         Transaction tx = transactionRepo.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy giao dịch"));
 
@@ -216,6 +220,17 @@ public class TransferService {
         tx.setStatus(Transaction.TransactionStatus.FAILED);
         transactionRepo.save(tx);
 
-        return tx;
+        return toDto(tx);
+    }
+
+    public TransactionDTO toDto(Transaction tx) {
+        TransactionDTO dto = new TransactionDTO();
+        dto.setTransactionId(tx.getTransactionId());
+        dto.setFromCardNumber(tx.getFromCard() != null ? tx.getFromCard().getCardNumber() : null);
+        dto.setToCardNumber(tx.getToCard() != null ? tx.getToCard().getCardNumber() : null);
+        dto.setAmount(tx.getAmount());
+        dto.setStatus(tx.getStatus().name());
+        dto.setCreatedAt(tx.getCreatedAt());
+        return dto;
     }
 }

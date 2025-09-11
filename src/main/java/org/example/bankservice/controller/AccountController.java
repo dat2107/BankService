@@ -21,7 +21,7 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody AccountDTO accountDTO){
-        Account account = accountService.create(accountDTO);
+        AccountResponseDTO account = accountService.create(accountDTO);
         return ResponseEntity.ok("Thêm thành công! " + account);
     }
 
@@ -51,7 +51,7 @@ public class AccountController {
 
     @PutMapping("/{accountId}")
     public ResponseEntity<?> update(@PathVariable Long accountId, @RequestBody AccountDTO accountDTO){
-        Account account = accountService.update(accountId,accountDTO);
+        AccountResponseDTO account = accountService.update(accountId,accountDTO);
         return ResponseEntity.ok("Sửa thành công! " + account);
     }
 

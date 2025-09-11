@@ -20,20 +20,27 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
     private Long accountId;
+
     private String customerName;
+
     private String email;
+
     private String phoneNumber;
+
     @OneToOne
     @JoinColumn(name = "user_id",referencedColumnName = "id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JsonBackReference
     private User user;
+
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private Balance balance;
+
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonIgnoreProperties({"account"})
     private List<Card> cards = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "level_id", referencedColumnName = "id")
     private UserLevel userLevel;

@@ -1,13 +1,11 @@
 package org.example.bankservice.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -19,7 +17,7 @@ public class Card {
     @Column(name = "card_id")
     private Long cardId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)
     @JsonIgnoreProperties({"cards"})
 //    @JsonBackReference

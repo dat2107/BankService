@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/card/**").permitAll()
                         .requestMatchers("/api/balance/**").permitAll()
                         .requestMatchers("/api/transfer/**").hasRole("USER")
+                        .requestMatchers("/api/payments/**").permitAll()
                         .requestMatchers("/api/transaction/**").permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/userlevel/**").hasRole("ADMIN")
