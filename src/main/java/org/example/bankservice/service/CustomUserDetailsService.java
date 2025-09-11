@@ -21,6 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user.getAccount() != null && !user.getAccount().isEmailVerified()) {
+            throw new RuntimeException("Bạn cần xác thực email trước khi đăng nhập");
+        }
 
         return new CustomUserDetails(
                 user.getId(),

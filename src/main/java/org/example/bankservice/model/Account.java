@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,4 +45,14 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "level_id", referencedColumnName = "id")
     private UserLevel userLevel;
+
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
+
+    @Column(name = "token_expiry")
+    private LocalDateTime tokenExpiry;
+
 }

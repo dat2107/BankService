@@ -18,4 +18,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findAll();
     @Query("SELECT a FROM Account a LEFT JOIN FETCH a.cards WHERE a.accountId = :id")
     Optional<Account> findByIdWithCards(@Param("id") Long id);
+    Optional<Account> findByVerificationToken(String token);
 }

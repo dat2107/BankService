@@ -161,7 +161,7 @@
             if (response.ok) {
                 document.getElementById("message").classList.remove("text-red-500");
                 document.getElementById("message").classList.add("text-green-600");
-                document.getElementById("message").innerText = "Đăng ký thành công! Vui lòng đăng nhập.";
+                document.getElementById("message").innerText = "tạo thành công! Bạn vui vòng xác nhận email trước khi đăng nhập.";
             } else {
                 const errorText = await response.text();
                 document.getElementById("message").innerText = errorText || "Đăng ký thất bại!";

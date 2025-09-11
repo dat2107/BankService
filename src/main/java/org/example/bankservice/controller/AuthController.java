@@ -5,6 +5,7 @@ import org.example.bankservice.dto.AccountDTO;
 import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.UserDTO;
 import org.example.bankservice.model.Account;
+import org.example.bankservice.repository.AccountRepository;
 import org.example.bankservice.service.AccountService;
 import org.example.bankservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,8 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AccountDTO accountDTO){
@@ -54,5 +58,22 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+        Account acc = accountRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new RuntimeException("Token không hợp lệ"));
+
+        if (acc.getTokenExpiry().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Token đã hết hạn");
+        }
+
+        acc.setEmailVerified(true);
+        acc.setVerificationToken(null);
+        acc.setTokenExpiry(null);
+
+        accountRepository.save(acc);
+
+        return ResponseEntity.ok("Xác thực email thành công! Bạn có thể đăng nhập.");
+    }
 
 }

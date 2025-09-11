@@ -24,6 +24,7 @@ public class AccountService {
     @Autowired private UserRepository userRepository;
     @Autowired private UserLevelRepository userLevelRepository;
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private EmailService emailService;
 
     // 🔹 CREATE
     @CachePut(value = "accounts_dto", key = "#result.accountId")
@@ -53,7 +54,20 @@ public class AccountService {
         balance.setAccount(account);
         account.setBalance(balance);
 
+        String token = java.util.UUID.randomUUID().toString();
+        account.setVerificationToken(token);
+        account.setTokenExpiry(java.time.LocalDateTime.now().plusHours(24));
+        account.setEmailVerified(false);
+
         Account saved = accountRepository.save(account);
+
+        String link = "http://localhost:8080/api/auth/verify?token=" + token;
+        emailService.sendEmail(
+                accountDTO.getEmail(),
+                "Xác thực tài khoản",
+                "<p>Nhấn vào link để xác thực tài khoản:</p>"
+                        + "<a href='" + link + "'>Xác thực ngay</a>"
+        );
         return mapToDTO(saved);
     }
 
