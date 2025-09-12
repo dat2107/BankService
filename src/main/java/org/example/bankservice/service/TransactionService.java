@@ -35,7 +35,8 @@ public class TransactionService {
     }
 
     public List<TransactionDTO> findByAccountId(Long accountId) {
-        List<Transaction> list = transactionRepository.findByAccount_AccountId(accountId);
+        List<Transaction> list = transactionRepository
+                .findByFromCard_Account_AccountIdOrToCard_Account_AccountId(accountId, accountId);
 
         return list.stream()
                 .map(this::toDto)
@@ -64,6 +65,8 @@ public class TransactionService {
     public TransactionDTO toDto(Transaction tx) {
         TransactionDTO dto = new TransactionDTO();
         dto.setTransactionId(tx.getTransactionId());
+        dto.setFromAccountId(tx.getFromCard() != null ? tx.getFromCard().getAccount().getAccountId() : null);
+        dto.setToAccountId(tx.getToCard() != null ? tx.getToCard().getAccount().getAccountId() : null);
         dto.setFromCardNumber(tx.getFromCard() != null ? tx.getFromCard().getCardNumber() : null);
         dto.setToCardNumber(tx.getToCard() != null ? tx.getToCard().getCardNumber() : null);
         dto.setAmount(tx.getAmount());

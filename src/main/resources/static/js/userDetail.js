@@ -44,7 +44,7 @@ function renderUserDetail(account) {
             <p><span class="font-semibold">Expiry Date:</span> ${card.expiryDate}</p>
             <p><span class="font-semibold">Type:</span> ${card.cardType}</p>
             <p><span class="font-semibold">Status:</span> ${card.status}</p>
-            <p><span class="font-semibold">Available Balance:</span> ${card.balance?.availableBalance || 0}</p>
+            <p><span class="font-semibold">Available Balance:</span> ${account.balance?.availableBalance || 0}</p>
             <button onclick="viewCard(${card.cardId})" 
             class="mt-3 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">
                 View Details

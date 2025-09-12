@@ -44,6 +44,10 @@ public class BalanceService {
         Card toCard = cardRepository.findById(toCardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ nhận"));
 
+        if (toCard.getStatus() == Card.Status.INACTIVE) {
+            throw new RuntimeException("Thẻ đã bị vô hiệu hóa, không thể giao dịch");
+        }
+
         Transaction tx = Transaction.builder()
                 .amount(amount)
                 .toCard(toCard)
@@ -79,6 +83,9 @@ public class BalanceService {
         Card fromCard = cardRepository.findById(fromCardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ nguồn"));
 
+        if (fromCard.getStatus() == Card.Status.INACTIVE) {
+            throw new RuntimeException("Thẻ đã bị vô hiệu hóa, không thể rút tiền");
+        }
         Transaction tx = Transaction.builder()
                 .amount(amount)
                 .fromCard(fromCard)

@@ -62,9 +62,9 @@ async function loadAccount() {
                                 <strong>Số thẻ:</strong> ${c.cardNumber} -
                                 <strong>Loại:</strong> ${c.cardType} -
                                 <strong>Số dư:</strong> ${data.balance?.availableBalance ?? 0} -
-                                <strong>Đang chờ xử lý:</strong> ${data.balance?.holdBalance ?? 0}
+                                <strong>Đang chờ xử lý:</strong> ${c.holdBalance ?? 0}
                             </p>
-                            <button onclick="navigate(event, '/transfer?cardId=${c.cardId}')"
+                             <button onclick="startTransfer(${c.cardId}, '${c.status}')"
                                     class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                                 Chuyển khoản
                             </button>
@@ -99,6 +99,15 @@ function createCard() {
 function transfer(cardNumber) {
     showToast("Chuyển khoản từ thẻ " + cardNumber);
 }
+
+function startTransfer(cardId, status) {
+    if (status === "INACTIVE") {
+        showToast("Thẻ này đã bị vô hiệu hóa, không thể chuyển khoản!", "error");
+        return;
+    }
+    navigate(event, "/transfer?cardId=" + cardId);
+}
+
 
 document.addEventListener("pageLoaded", e => {
     if (e.detail.includes("/account")) {

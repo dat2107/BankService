@@ -23,6 +23,7 @@ public class AccountService {
     @Autowired private CardRepository cardRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private UserLevelRepository userLevelRepository;
+    @Autowired private TransactionRepository transactionRepository;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private EmailService emailService;
 
@@ -161,6 +162,13 @@ public class AccountService {
                 c.setCardType(card.getCardType());
                 c.setExpiryDate(card.getExpiryDate());
                 c.setStatus(card.getStatus());
+                BigDecimal holdBalance = transactionRepository
+                        .findByFromCardAndStatus(card, Transaction.TransactionStatus.WAITING_APPROVAL)
+                        .stream()
+                        .map(Transaction::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                c.setHoldBalance(holdBalance);
                 return c;
             }).collect(Collectors.toList());
             dto.setCards(cardDTOs);

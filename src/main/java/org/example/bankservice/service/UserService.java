@@ -50,16 +50,6 @@ public class UserService {
         }
     }
 
-    public UserDTO checkLogin(String username, String password) {
-        return userRepository.findByUsername(username)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
-                .map(user -> UserDTO.builder()
-                        .username(user.getUsername())
-                        .role(user.getRole())
-                        .build())
-                .orElse(null);
-    }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

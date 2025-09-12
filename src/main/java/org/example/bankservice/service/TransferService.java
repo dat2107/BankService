@@ -45,8 +45,24 @@ public class TransferService {
             throw new RuntimeException("Số tiền không hợp lệ");
         }
 
+        if (fromCard.getCardId().equals(toCard.getCardId())) {
+            throw new RuntimeException("Không thể chuyển khoản sang cùng một thẻ");
+        }
+
+        if (fromCard.getAccount().getAccountId().equals(toCard.getAccount().getAccountId())) {
+            throw new RuntimeException("Không thể chuyển khoản giữa các thẻ trong cùng một tài khoản");
+        }
+
         if (fromCard.getAccount().getBalance().getAvailableBalance().compareTo(dto.getAmount()) < 0) {
             throw new RuntimeException("Số dư không đủ");
+        }
+
+        if (fromCard.getStatus() == Card.Status.INACTIVE) {
+            throw new RuntimeException("Thẻ nguồn đã bị vô hiệu hóa, không thể chuyển khoản");
+        }
+
+        if (toCard.getStatus() == Card.Status.INACTIVE) {
+            throw new RuntimeException("Thẻ nhận đã bị vô hiệu hóa, không thể chuyển khoản");
         }
 
         // Tạo transaction
@@ -219,6 +235,41 @@ public class TransferService {
 
         tx.setStatus(Transaction.TransactionStatus.FAILED);
         transactionRepo.save(tx);
+
+        // ✅ Gửi email thông báo bị từ chối (best-effort, không phá giao dịch nếu gửi lỗi)
+        try {
+            String toEmail = fromCard.getAccount().getEmail();
+            if (toEmail != null && !toEmail.isBlank()) {
+                String subject = "Giao dịch chuyển tiền đã bị từ chối";
+                String html = """
+                <p>Xin chào <b>%s</b>,</p>
+                <p>Giao dịch chuyển tiền của bạn đã <b>bị từ chối</b> bởi quản trị viên.</p>
+                <ul>
+                  <li><b>Mã giao dịch:</b> %s</li>
+                  <li><b>Số thẻ nguồn:</b> %s</li>
+                  <li><b>Số thẻ nhận:</b> %s</li>
+                  <li><b>Số tiền:</b> %s</li>
+                  <li><b>Thời điểm:</b> %s</li>
+                  <li><b>Trạng thái:</b> %s</li>
+                </ul>
+                <p>Số tiền đã được hoàn lại vào số dư khả dụng của bạn.</p>
+                <p>Nếu bạn không thực hiện yêu cầu này, vui lòng liên hệ hỗ trợ ngay.</p>
+                """.formatted(
+                        fromCard.getAccount().getCustomerName() != null ? fromCard.getAccount().getCustomerName() : "Quý khách",
+                        tx.getTransactionId(),
+                        fromCard.getCardNumber(),
+                        tx.getToCard() != null ? tx.getToCard().getCardNumber() : "(không xác định)",
+                        amount.toPlainString(),
+                        LocalDateTime.now(),
+                        tx.getStatus().name()
+                );
+
+                emailService.sendEmail(toEmail, subject, html);
+            }
+        } catch (Exception ignore) {
+            // log nhẹ nếu bạn muốn, nhưng không ném lỗi để tránh rollback vì lỗi gửi email
+            // e.g. logger.warn("Send reject email failed", ignore);
+        }
 
         return toDto(tx);
     }

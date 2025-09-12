@@ -21,4 +21,5 @@ public class CardDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate expiryDate;
     private Card.Status status;
+    private BigDecimal holdBalance = BigDecimal.ZERO;
 }

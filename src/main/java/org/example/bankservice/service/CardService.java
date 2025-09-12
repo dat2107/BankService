@@ -6,9 +6,11 @@ import org.example.bankservice.dto.CardResponseDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.model.Balance;
 import org.example.bankservice.model.Card;
+import org.example.bankservice.model.Transaction;
 import org.example.bankservice.repository.AccountRepository;
 import org.example.bankservice.repository.BalanceRepository;
 import org.example.bankservice.repository.CardRepository;
+import org.example.bankservice.repository.TransactionRepository;
 import org.example.bankservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,6 +30,8 @@ public class CardService {
     @Autowired
     private BalanceRepository balanceRepository;
     @Autowired
+    private TransactionRepository transactionRepository;
+    @Autowired
     private AccountService accountService;
     @Autowired
     private JwtUtil jwtUtil;
@@ -39,7 +43,14 @@ public class CardService {
             @CacheEvict(value = "cards_dto", allEntries = true)           // clear danh sách thẻ (nếu có cache)
     })
     public CardResponseDTO create(CardDTO cardDTO, String token) {
-        Long accountId = jwtUtil.extractAccountId(token);
+        Long accountId ;
+        // ✅ Nếu cardDTO có accountId -> admin đang tạo thẻ cho user
+        if (cardDTO.getAccountId() != null) {
+            accountId = cardDTO.getAccountId();
+        } else {
+            // ✅ User tự tạo thẻ -> lấy accountId từ token
+            accountId = jwtUtil.extractAccountId(token);
+        }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         Card card = new Card();
@@ -47,6 +58,7 @@ public class CardService {
         card.setCardType(cardDTO.getCardType());
         card.setExpiryDate(cardDTO.getExpiryDate());
         card.setStatus(cardDTO.getStatus());
+        card.setStatus(Card.Status.ACTIVE);
         String cardNumber = generateCardNumber();
         card.setCardNumber(cardNumber);
 
@@ -112,8 +124,10 @@ public class CardService {
         Balance balance = balanceRepository.findByAccount_AccountId(card.getAccount().getAccountId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy số dư cho account"));
 
-        if (balance.getHoldBalance().compareTo(BigDecimal.ZERO) > 0) {
-            throw new RuntimeException("Không thể xóa thẻ vì có giao dịch đang chờ xử lý (holdBalance > 0)");
+        BigDecimal holdBalanceForCard = calculateCardHoldBalance(cardId);
+
+        if (holdBalanceForCard.compareTo(BigDecimal.ZERO) > 0) {
+            throw new RuntimeException("Không thể xóa thẻ vì có số dư đang chờ xử lý (" + holdBalanceForCard + ")");
         }
 
         cardRepository.delete(card);
@@ -127,15 +141,6 @@ public class CardService {
     }
 
 
-//    // 🔹 2. Cập nhật trạng thái thẻ
-//    public Card updateStatus(Long cardId) {
-//        Card card = cardRepository.findById(cardId)
-//                .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với id = " + cardId));
-//
-//        card.setStatus(Card.Status.INACTIVE); // giả sử field `status` trong Card là String (ACTIVE/INACTIVE)
-//        return cardRepository.save(card);
-//    }
-
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "accounts_dto", allEntries = true),       // clear cache account cụ thể
@@ -146,11 +151,14 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với id = " + cardId));
 
-        card.setStatus(Card.Status.INACTIVE);
+        if (card.getStatus() == Card.Status.ACTIVE) {
+            card.setStatus(Card.Status.INACTIVE);
+        } else {
+            card.setStatus(Card.Status.ACTIVE);
+        }
         Card updated = cardRepository.save(card);
         return mapToDTO(updated);
     }
-
 
     private CardResponseDTO mapToDTO(Card card) {
         CardResponseDTO dto = new CardResponseDTO();
@@ -160,9 +168,25 @@ public class CardService {
         dto.setStatus(card.getStatus().name());
         dto.setExpiryDate(card.getExpiryDate());
 
+
         AccountResponseDTO accDto = accountService.mapToDTO(card.getAccount());
         dto.setAccount(accDto);
 
         return dto;
     }
+
+    private BigDecimal calculateCardHoldBalance(Long cardId) {
+        // Lấy tất cả giao dịch liên quan đến thẻ nguồn đang ở trạng thái PENDING hoặc WAITING_APPROVAL
+        List<Transaction> pendingTx = transactionRepository
+                .findByFromCard_CardIdAndStatusIn(
+                        cardId,
+                        List.of(Transaction.TransactionStatus.PENDING,
+                                Transaction.TransactionStatus.WAITING_APPROVAL)
+                );
+
+        return pendingTx.stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

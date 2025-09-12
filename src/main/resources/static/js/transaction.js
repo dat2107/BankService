@@ -40,6 +40,19 @@ document.addEventListener("pageLoaded", async (e) => {
         const tbody = document.getElementById("transactionTable");
         tbody.innerHTML = "";
         transactions.forEach(t => {
+            let actionHtml = "";
+
+            if (t.status === 'WAITING_APPROVAL') {
+                actionHtml = `
+                <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 mr-2"
+                        onclick="approveTransaction(${t.transactionId})">Approve</button>
+                <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        onclick="rejectTransaction(${t.transactionId})">Reject</button>
+            `;
+            } else {
+                actionHtml = `<span class="text-gray-500 italic">No action</span>`;
+            }
+
             tbody.innerHTML += `
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-2 border text-center">${t.transactionId}</td>
@@ -48,21 +61,21 @@ document.addEventListener("pageLoaded", async (e) => {
                     <td class="px-4 py-2 border text-center">${Number(t.amount).toLocaleString()}</td>
                     <td class="px-4 py-2 border text-center">${t.type}</td>
                     <td class="px-4 py-2 border text-center">
-                        <span class="px-2 py-1 rounded text-white ${t.status === 'SUCCESS' ? 'bg-green-500' : (t.status === 'PENDING' ? 'bg-yellow-500' : 'bg-red-500')}">
+                        <span class="px-2 py-1 rounded text-white ${
+                            t.status === 'SUCCESS' ? 'bg-green-500' : 
+                                (t.status === 'PENDING' ? 'bg-yellow-500' : 'bg-red-500')
+                        }">
                             ${t.status}
                         </span>
                     </td>
-                    <td class="px-4 py-2 border text-center">
-                        <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                                onclick="updateStatus(${t.transactionId})">Update success</button>
-                    </td>
+                   <td class="px-4 py-2 border text-center">${actionHtml}</td>
                 </tr>
             `;
         });
     }
 
-    window.updateStatus = async function(id) {
-        showConfirm("Xác nhận duyệt giao dịch này?", async () => {
+    window.approveTransaction = async function(id) {
+        showApproveModal("Xác nhận duyệt giao dịch này?", async () => {
             try {
                 const res = await fetch(`/api/admin/transactions/${id}/approve`, {
                     method: "POST",
@@ -85,6 +98,29 @@ document.addEventListener("pageLoaded", async (e) => {
         });
     };
 
+    window.rejectTransaction = async function(id) {
+        showRejectModal("Bạn chắc chắn muốn từ chối giao dịch này?", async () => {
+            try {
+                const res = await fetch(`/api/admin/transactions/${id}/reject`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (res.ok) {
+                    showToast("🚫 Từ chối thành công!", "success");
+                    loadTransactions(currentPage);
+                } else {
+                    showToast("❌ Từ chối thất bại!", "error");
+                }
+            } catch (err) {
+                console.error("Error rejecting transaction:", err);
+                showToast("⚠️ Có lỗi khi từ chối giao dịch!", "error");
+            }
+        });
+    };
 
     // Pagination control
     document.getElementById("prevPage").addEventListener("click", () => {

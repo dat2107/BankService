@@ -24,19 +24,6 @@ public class UserController {
         return "Xin chào, " + authentication.getName();
     }
 
-//    @GetMapping("/dashboa/users")
-//    public String getUsers(Model model,
-//                           @RequestParam(value = "keyword", required = false) String keyword) {
-//        List<User> users;
-//        if (keyword != null && !keyword.isEmpty()) {
-//            users = userService.searchUsers(keyword);
-//        } else {
-//            users = userService.getAllUsers();
-//        }
-//        model.addAttribute("users", users);
-//        model.addAttribute("keyword", keyword);
-//        return "adminDashboard";
-//    }
 
     @GetMapping
     public List<User> getAll(@RequestParam(required = false) String keyword) {

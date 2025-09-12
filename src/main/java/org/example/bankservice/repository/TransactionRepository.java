@@ -1,5 +1,6 @@
 package org.example.bankservice.repository;
 
+import org.example.bankservice.model.Card;
 import org.example.bankservice.model.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,4 +30,9 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
        """)
     List<Transaction> findByAccount_AccountId(@Param("accountId") Long accountId);
 
+    List<Transaction> findByFromCardAndStatus(Card fromCard, Transaction.TransactionStatus status);
+
+    List<Transaction> findByFromCard_CardIdAndStatusIn(Long cardId, List<Transaction.TransactionStatus> statuses);
+
+    List<Transaction> findByFromCard_Account_AccountIdOrToCard_Account_AccountId(Long fromAccountId, Long toAccountId);
 }

@@ -39,3 +39,102 @@ function showToast(message, type = "success") {
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 }
+
+function showConfirm(message, onConfirm) {
+    const modal = document.getElementById("confirmModal");
+    const msgEl = document.getElementById("confirmMessage");
+    const btnYes = document.getElementById("confirmYes");
+    const btnNo = document.getElementById("confirmNo");
+
+    msgEl.innerText = message;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    // cleanup event listener để tránh gọi nhiều lần
+    btnYes.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        onConfirm();
+    };
+    btnNo.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    };
+}
+
+function showTransactionModal(message, onApprove, onReject) {
+    const modal = document.getElementById("transactionModal");
+    const msgEl = document.getElementById("transactionModalMessage");
+
+    msgEl.innerText = message;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    // clear old listeners
+    const approveBtn = document.getElementById("transactionApproveBtn");
+    const rejectBtn = document.getElementById("transactionRejectBtn");
+    const cancelBtn = document.getElementById("transactionCancelBtn");
+
+    approveBtn.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        if (onApprove) onApprove();
+    };
+    rejectBtn.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        if (onReject) onReject();
+    };
+    cancelBtn.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    };
+}
+
+function showApproveModal(message, onConfirm) {
+    const modal = document.getElementById("approveModal");
+    const msgEl = modal.querySelector("p");
+
+    msgEl.innerText = message;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    const btnOk = document.getElementById("approveOkBtn");
+    const btnCancel = document.getElementById("approveCancelBtn");
+
+    btnOk.onclick = async () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        if (onConfirm) await onConfirm();
+    };
+    btnCancel.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    };
+}
+
+function showRejectModal(message, onConfirm) {
+    const modal = document.getElementById("rejectModal");
+    const msgEl = modal.querySelector("p");
+
+    msgEl.innerText = message;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    const btnOk = document.getElementById("rejectOkBtn");
+    const btnCancel = document.getElementById("rejectCancelBtn");
+
+    btnOk.onclick = async () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        if (onConfirm) await onConfirm();
+    };
+
+    btnCancel.onclick = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    };
+}
+
+
+

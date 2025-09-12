@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TransactionDTO {
     private Long transactionId;
+    private Long fromAccountId; // thêm
+    private Long toAccountId;   // thêm
     private String fromCardNumber;
     private String toCardNumber;
     private String type;

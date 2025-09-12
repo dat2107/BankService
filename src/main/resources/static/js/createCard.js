@@ -21,8 +21,7 @@ function initCreateCardForm() {
         // ❌ Không cần gửi accountId nữa
         const cardData = {
             cardType: document.getElementById("cardType").value,
-            expiryDate: document.getElementById("expiryDate").value, // input type="date" => "2025-08-07"
-            status: document.getElementById("status").value
+            expiryDate: document.getElementById("expiryDate").value
         };
 
         console.log("📤 Sending card data:", JSON.stringify(cardData));
