@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch Sử Giao Dịch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans p-8">
+
+<div class="mb-8">
+    <h3 class="text-3xl font-bold text-gray-800 mb-2">📜 Lịch Sử Giao Dịch</h3>
+    <p class="text-gray-600">Danh sách tất cả giao dịch liên quan đến tài khoản</p>
+</div>
+
+<div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full border border-gray-200">
+            <thead class="bg-gray-100">
+            <tr>
+                <th class="px-4 py-2 border text-left">ID Giao Dịch</th>
+                <th class="px-4 py-2 border text-left">Ngày Giao Dịch</th>
+                <th class="px-4 py-2 border text-left">Số Tiền</th>
+                <th class="px-4 py-2 border text-left">Loại Giao Dịch</th>
+                <th class="px-4 py-2 border text-left">Trạng Thái</th>
+                <th class="px-4 py-2 border text-left">Số Thẻ Gửi</th>
+                <th class="px-4 py-2 border text-left">Số Thẻ Nhận</th>
+            </tr>
+            </thead>
+            <tbody id="transactionTable" class="divide-y divide-gray-200">
+            <!-- JS sẽ render dữ liệu ở đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-6 border-t border-gray-200 flex justify-end">
+        <button onclick="navigate(event, '/account')"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Home
+        </button>
+    </div>
+</div>
+
+</body>
+</html>

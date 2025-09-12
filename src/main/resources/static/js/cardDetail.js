@@ -8,7 +8,7 @@ document.addEventListener("pageLoaded", async (e) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -45,25 +45,21 @@ document.addEventListener("pageLoaded", async (e) => {
         document.getElementById("lastUpdated").innerText = balance.lastUpdated;
     } catch (err) {
         console.error("Error loading card details", err);
+        showToast("Lỗi khi tải chi tiết thẻ!", "error");
     }
 });
 
 // Back
 function backToUser() {
-    window.location.href = "/user";
+    navigate(event, "/user");
 }
 
 // Deposit
 async function deposit() {
     const amount = document.getElementById("depositAmount").value;
-    if (!amount) return alert("Nhập số tiền");
+    if (!amount) return showNotify("Vui lòng nhập số tiền", "Thông báo");
     const token = localStorage.getItem("token");
 
-    // const res = await fetch("/api/balance/deposit", {
-    //     method: "POST",
-    //     headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
-    //     body: JSON.stringify({ amount })
-    // });
     const res = await fetch(`/api/balance/${card.account.accountId}/deposit?amount=${amount}&toCardId=${card.cardId}`, {
         method: "POST",
         headers: { "Authorization": "Bearer " + token }
@@ -71,17 +67,17 @@ async function deposit() {
 
 
     if (res.ok) {
-        alert("Nạp tiền thành công");
-        location.reload();
+        showToast("Nạp tiền thành công!", "success");
+        await loadCardDetail(card.cardId, token);
     } else {
-        alert("Nạp tiền thất bại");
+        showToast("Nạp tiền thất bại!", "error");
     }
 }
 
 // Withdraw
 async function withdraw() {
     const amount = document.getElementById("withdrawAmount").value;
-    if (!amount) return alert("Nhập số tiền");
+    if (!amount) return showNotify("Vui lòng nhập số tiền", "Thông báo");
     const token = localStorage.getItem("token");
 
     const res = await fetch(`/api/balance/${card.account.accountId}/withdraw?amount=${amount}&fromCardId=${card.cardId}`, {
@@ -91,9 +87,9 @@ async function withdraw() {
 
 
     if (res.ok) {
-        alert("Rút tiền thành công");
-        location.reload();
+        showToast("Rút tiền thành công!", "success");
+        await loadCardDetail(card.cardId, token);
     } else {
-        alert("Rút tiền thất bại");
+        showToast("Rút tiền thất bại!", "error");
     }
 }

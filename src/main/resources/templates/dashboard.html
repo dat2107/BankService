@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link th:href="@{/css/custom.css}" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -166,7 +167,8 @@
         </div>
     </main>
 </div>
-
+<div th:replace="fragments/notify :: notify"></div>
+<script th:src="@{/js/notify.js}"></script>
 </body>
 <script src="/js/dashboard.js"></script>
 <script src="/js/user.js"></script>

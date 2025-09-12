@@ -6,7 +6,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -17,7 +17,7 @@ document.addEventListener("pageLoaded", async (e) => {
         });
 
         if (!res.ok) {
-            alert("Không tìm thấy thẻ");
+            showToast("Không tìm thấy thẻ", "error");
             return;
         }
 
@@ -37,7 +37,7 @@ document.addEventListener("pageLoaded", async (e) => {
             });
 
             if (!resReceiver.ok) {
-                alert("Không tìm thấy người nhận!");
+                showToast("Không tìm thấy người nhận!", "error");
                 return;
             }
 
@@ -69,12 +69,12 @@ document.addEventListener("pageLoaded", async (e) => {
             });
 
             if (!resReq.ok) {
-                alert("Không tạo được giao dịch!");
+                showToast("Không tạo được giao dịch!", "error");
                 return;
             }
 
             const result = await resReq.json();
-            alert("Mã OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận.");
+            showNotify("Mã OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận.", "Thông báo");
 
             document.getElementById("transactionId").value = result.transactionId;
             document.getElementById("otpSection").classList.remove("hidden");
@@ -99,16 +99,17 @@ document.addEventListener("pageLoaded", async (e) => {
             });
 
             if (!resConfirm.ok) {
-                alert("Xác nhận OTP thất bại!");
+                showToast("Xác nhận OTP thất bại!", "error");
                 return;
             }
 
             const result = await resConfirm.json();
-            alert("OTP hợp lệ! Giao dịch đang chờ Admin duyệt. Mã giao dịch: " + result.transactionId);
+            showToast("OTP hợp lệ! Giao dịch đang chờ Admin duyệt. Mã giao dịch: " + result.transactionId, "success");
             window.location.href = "/home";
         });
 
     } catch (err) {
         console.error("Lỗi khi load thẻ:", err);
+        showToast("Có lỗi khi tải dữ liệu thẻ!", "error");
     }
 });

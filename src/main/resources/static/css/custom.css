@@ -1,0 +1,16 @@
+@keyframes fade-in-down {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-in {
+    0% { opacity: 0; transform: translateX(100%); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(100%); }
+}
+
+.animate-fade-in-down { animation: fade-in-down 0.4s ease-out; }
+.animate-slide-in { animation: slide-in 0.4s ease-out; }
+.animate-fade-out { animation: fade-out 0.4s ease-in forwards; }

@@ -6,7 +6,7 @@ document.addEventListener("pageLoaded", async (e) => {
 async function loadCards(query = "") {
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -22,6 +22,7 @@ async function loadCards(query = "") {
 
         if (!res.ok) {
             console.error("Failed to fetch cards", res.status);
+            showToast("Không tải được danh sách thẻ", "error");
             return;
         }
 
@@ -29,6 +30,7 @@ async function loadCards(query = "") {
         renderCardTable(cards);
     } catch (err) {
         console.error("Error loading cards:", err);
+        showToast("Lỗi khi tải danh sách thẻ!", "error");
     }
 }
 
@@ -59,18 +61,18 @@ function viewCard(cardId) {
 }
 
 function deleteCard(cardId) {
-    if (!confirm("Bạn có chắc muốn xóa card này?")) return;
+    showConfirm("Bạn có chắc muốn xóa card này?", async () => {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/card/${cardId}`, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token }
+        });
 
-    const token = localStorage.getItem("token");
-    fetch(`/api/card/${cardId}`, {
-        method: "DELETE",
-        headers: { "Authorization": "Bearer " + token }
-    }).then(res => {
         if (res.ok) {
-            alert("Xóa thành công!");
-            loadCards();
+            showToast("Xóa thành công!", "success");
+            await loadCards();
         } else {
-            alert("Xóa thất bại!");
+            showToast("Xóa thất bại!", "error");
         }
     });
 }
@@ -82,10 +84,10 @@ function updateStatus(cardId) {
         headers: { "Authorization": "Bearer " + token }
     }).then(res => {
         if (res.ok) {
-            alert("Cập nhật trạng thái thành công!");
+            showToast("Cập nhật trạng thái thành công!", "success");
             loadCards();
         } else {
-            alert("Cập nhật trạng thái thất bại!");
+            showToast("Cập nhật trạng thái thất bại!", "error");
         }
     });
 }

@@ -124,4 +124,9 @@ public class ViewAuthController {
     public String transactionPage(){
         return "transaction";
     }
+
+    @GetMapping("/transaction-history")
+    public String transactionHistoryPage(){
+        return "transaction-history";
+    }
 }

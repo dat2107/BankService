@@ -4,7 +4,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -15,6 +15,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
         if (!res.ok) {
             console.error("Failed to fetch users", res.status);
+            showToast("Không thể tải danh sách người dùng", "error");
             return;
         }
 
@@ -28,6 +29,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     } catch (err) {
         console.error("Error loading users:", err);
+        showToast("Có lỗi khi tải danh sách người dùng!", "error");
     }
 });
 

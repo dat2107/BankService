@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Home - MyBank</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link th:href="@{/css/custom.css}" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -34,7 +35,9 @@
                    class="hover:text-blue-200 px-3 py-2 rounded-lg hover:bg-blue-700">
                     Tài Khoản
                 </a>
-                <a href="/history" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Lịch Sử</a>
+                <a href="/history" onclick="navigate(event, '/transaction-history')"
+                   class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">
+                    Lịch Sử</a>
                 <a href="/services" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Dịch Vụ</a>
                 <a href="/contact" class="hover:text-blue-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-blue-700">Liên Hệ</a>
                 <a href="#" onclick="logout()" class="hover:text-red-200 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-red-600">Đăng Xuất</a>
@@ -163,9 +166,12 @@
         </div>
     </div>
 </main>
+<div th:replace="fragments/notify :: notify"></div>
+<script th:src="@{/js/notify.js}"></script>
 <script src="/js/home.js"></script>
 <script src="/js/account.js"></script>
 <script src="/js/createCard.js"></script>
 <script src="/js/transfer.js"></script>
+<script src="/js/transaction-history.js"></script>
 </body>
 </html>

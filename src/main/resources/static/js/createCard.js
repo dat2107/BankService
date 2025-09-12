@@ -14,7 +14,7 @@ function initCreateCardForm() {
         console.log("🔑 Token:", token);
 
         if (!token) {
-            alert("Bạn chưa đăng nhập!");
+            showNotify("Bạn chưa đăng nhập!", "Thông báo");
             return;
         }
 
@@ -40,15 +40,15 @@ function initCreateCardForm() {
             console.log("Response status:", response.status);
 
             if (response.ok) {
-                alert("✅ Tạo thẻ thành công!");
-                loadPage("/account");
+                showToast("✅ Tạo thẻ thành công!", "success");
+                setTimeout(() => loadPage("/account"), 1000);
             } else {
                 const errMsg = await response.text();
-                alert("❌ Lỗi: " + errMsg);
+                showToast("❌ Lỗi: " + errMsg, "error");
             }
         } catch (err) {
             console.error(err);
-            alert("⚠️ Không thể kết nối server!");
+            showToast("⚠️ Không thể kết nối server!", "error");
         }
     });
 }

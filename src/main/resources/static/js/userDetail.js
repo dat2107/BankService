@@ -6,7 +6,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -17,6 +17,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
         if (!res.ok) {
             console.error("Failed to fetch account", res.status);
+            showToast("Không thể tải chi tiết tài khoản!", "error");
             return;
         }
 
@@ -24,6 +25,7 @@ document.addEventListener("pageLoaded", async (e) => {
         renderUserDetail(account);
     } catch (err) {
         console.error("Error loading account detail:", err);
+        showToast("Có lỗi khi tải chi tiết tài khoản!", "error");
     }
 });
 

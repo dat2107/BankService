@@ -97,7 +97,7 @@ function createCard() {
 }
 
 function transfer(cardNumber) {
-    alert("Chuyển khoản từ thẻ " + cardNumber);
+    showToast("Chuyển khoản từ thẻ " + cardNumber);
 }
 
 document.addEventListener("pageLoaded", e => {

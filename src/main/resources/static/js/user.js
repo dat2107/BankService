@@ -4,7 +4,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 

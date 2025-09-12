@@ -5,7 +5,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -25,6 +25,7 @@ document.addEventListener("pageLoaded", async (e) => {
             console.log("Parsed JSON:", user);
         } catch (err) {
             console.error("Body không phải JSON:", err);
+            showToast("Dữ liệu người dùng không hợp lệ!", "error");
         }
 
 
@@ -70,14 +71,16 @@ document.addEventListener("pageLoaded", async (e) => {
             });
 
             if (resUpdate.ok) {
-                alert("Cập nhật thành công!");
-                history.back();
+                showToast("Cập nhật thành công!", "success");
+                setTimeout(() => history.back(), 1000); // chờ user thấy thông báo
             } else {
-                alert("Cập nhật thất bại!");
+                const errMsg = await resUpdate.text();
+                showToast("Cập nhật thất bại: " + errMsg, "error");
             }
         });
 
     } catch (err) {
         console.error("Error loading user:", err);
+        showToast("Không thể tải thông tin người dùng!", "error");
     }
 });

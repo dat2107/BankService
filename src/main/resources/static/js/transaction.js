@@ -3,7 +3,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        alert("Bạn chưa đăng nhập!");
+        showNotify("Bạn chưa đăng nhập!", "Thông báo");
         return;
     }
 
@@ -20,6 +20,7 @@ document.addEventListener("pageLoaded", async (e) => {
 
             if (!res.ok) {
                 console.error("Lỗi tải transaction", res.status);
+                showToast("Không thể tải danh sách giao dịch", "error");
                 return;
             }
 
@@ -31,6 +32,7 @@ document.addEventListener("pageLoaded", async (e) => {
             document.getElementById("currentPage").innerText = `${currentPage} / ${totalPages}`;
         } catch (err) {
             console.error("Error loading transactions:", err);
+            showToast("Có lỗi khi tải giao dịch!", "error");
         }
     }
 
@@ -60,26 +62,28 @@ document.addEventListener("pageLoaded", async (e) => {
     }
 
     window.updateStatus = async function(id) {
-        if (!confirm("Xác nhận duyệt giao dịch này?")) return;
-        try {
-            const res = await fetch(`/api/admin/transactions/${id}/approve`, {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Content-Type": "application/json"
-                }
+        showConfirm("Xác nhận duyệt giao dịch này?", async () => {
+            try {
+                const res = await fetch(`/api/admin/transactions/${id}/approve`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Content-Type": "application/json"
+                    }
+                });
 
-            });
-            if (res.ok) {
-                alert("Duyệt thành công!");
-                loadTransactions(currentPage);
-            } else {
-                alert("Duyệt thất bại!");
+                if (res.ok) {
+                    showToast("Duyệt thành công!", "success");
+                    loadTransactions(currentPage);
+                } else {
+                    showToast("Duyệt thất bại!", "error");
+                }
+            } catch (err) {
+                console.error("Error approving transaction:", err);
+                showToast("Có lỗi khi duyệt giao dịch!", "error");
             }
-        } catch (err) {
-            console.error("Error approving transaction:", err);
-        }
-    }
+        });
+    };
 
 
     // Pagination control

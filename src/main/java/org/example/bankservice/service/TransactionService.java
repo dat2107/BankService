@@ -34,13 +34,12 @@ public class TransactionService {
         return transactions.map(this::toDto);
     }
 
-    public Page<TransactionDTO> getByAccount(Long accountId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Transaction> transactions =
-                transactionRepository.findByFromCard_Account_AccountIdOrToCard_Account_AccountId(
-                        accountId, accountId, pageable);
+    public List<TransactionDTO> findByAccountId(Long accountId) {
+        List<Transaction> list = transactionRepository.findByAccount_AccountId(accountId);
 
-        return transactions.map(this::toDto);
+        return list.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public Page<TransactionDTO> getByCard(Long cardId, int page, int size) {

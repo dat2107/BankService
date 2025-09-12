@@ -48,7 +48,7 @@ public class SecurityConfig {
                                 "/login", "/register","/forgot", "/",
                                 "/home", "/dashboard","/account","/createCard","/user","/vip-detail","/user-level",
                                 "/updateUser","/userDetail","/cardManager","/cardDetail",
-                                "/transfer","/transaction",
+                                "/transfer","/transaction","/transaction-history",
                                 "/assets/**", "/css/**", "/js/**", "/images/**","/favicon.ico",
                                 "/oauth2/**",
                                 "/WEB-INF/views/**"

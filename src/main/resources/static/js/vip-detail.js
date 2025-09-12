@@ -23,6 +23,7 @@ async function loadUserLevels() {
 
         if (!res.ok) {
             console.error("Failed to fetch user levels", res.status);
+            showToast("Không thể tải danh sách cấp độ người dùng", "error");
             return;
         }
 
@@ -48,29 +49,32 @@ async function loadUserLevels() {
         });
     } catch (err) {
         console.error("Error loading user levels:", err);
+        showToast("Có lỗi khi tải danh sách user level!", "error");
     }
 }
 
 async function deleteLevel(id) {
-    if (!confirm("Are you sure you want to delete this level?")) return;
+    showConfirm("Bạn có chắc chắn muốn xóa cấp độ này?", async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch("/api/userlevel/" + id, {
+                method: "DELETE",
+                headers: { "Authorization": "Bearer " + token }
+            });
 
-    try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("/api/userlevel/" + id, {
-            method: "DELETE",
-            headers: { "Authorization": "Bearer " + token }
-        });
-
-        if (res.ok) {
-            alert("Deleted successfully!");
-            await loadUserLevels();
-        } else {
-            alert("Failed to delete level");
+            if (res.ok) {
+                showToast("Xóa thành công!", "success");
+                await loadUserLevels();
+            } else {
+                showToast("Xóa thất bại!", "error");
+            }
+        } catch (err) {
+            console.error("Error deleting:", err);
+            showToast("Có lỗi khi xóa cấp độ!", "error");
         }
-    } catch (err) {
-        console.error("Error deleting:", err);
-    }
+    });
 }
+
 
 function openAddModal() {
     document.getElementById("modalTitle").innerText = "Add User Level";
@@ -104,7 +108,7 @@ async function openEditModal(id) {
         document.getElementById("userLevelModal").classList.remove("hidden");
         document.getElementById("userLevelModal").classList.add("flex");
     } else {
-        alert("Failed to load user level!");
+        showToast("Không thể tải thông tin cấp độ!", "error");
     }
 }
 
@@ -140,20 +144,26 @@ async function saveUserLevel() {
         method = "PUT";
     }
 
-    const res = await fetch(url, {
-        method,
-        headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
+    try {
+        const res = await fetch(url, {
+            method,
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
 
-    if (res.ok) {
-        alert(id ? "Updated successfully!" : "Added successfully!");
-        closeModal();
-        await loadUserLevels();
-    } else {
-        alert("Error saving user level!");
+        if (res.ok) {
+            showToast(id ? "Cập nhật thành công!" : "Thêm mới thành công!", "success");
+            closeModal();
+            await loadUserLevels();
+        } else {
+            const errMsg = await res.text();
+            showToast("Lưu thất bại: " + errMsg, "error");
+        }
+    } catch (err) {
+        console.error("Error saving user level:", err);
+        showToast("Có lỗi khi lưu cấp độ người dùng!", "error");
     }
 }

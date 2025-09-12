@@ -40,11 +40,9 @@ public class TransactionController {
      * Lấy giao dịch theo accountId (User)
      */
     @GetMapping("/account/{accountId}")
-    public ResponseEntity<Page<TransactionDTO>> getByAccount(
-            @PathVariable Long accountId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "7") int size) {
-        return ResponseEntity.ok(transactionService.getByAccount(accountId, page, size));
+    public ResponseEntity<List<TransactionDTO>> getTransactionsByAccount(@PathVariable Long accountId) {
+        List<TransactionDTO> transactions = transactionService.findByAccountId(accountId);
+        return ResponseEntity.ok(transactions);
     }
 
     /**
@@ -68,14 +66,6 @@ public class TransactionController {
             @RequestBody TransactionDTO request) {
         return ResponseEntity.ok(transactionService.updateStatus(id, request.getStatus()));
     }
-
-    /**
-     * Lấy toàn bộ giao dịch (admin xem)
-     */
-//    @GetMapping
-//    public ResponseEntity<List<Transaction>> getAll() {
-//        return ResponseEntity.ok(transactionRepo.findAll());
-//    }
 
     /**
      * Xem chi tiết 1 giao dịch
