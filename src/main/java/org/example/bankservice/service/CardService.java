@@ -155,6 +155,14 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ với id = " + cardId));
 
+        if (card.getExpiryDate() != null && card.getExpiryDate().isBefore(java.time.LocalDate.now())) {
+            if (card.getStatus() != Card.Status.INACTIVE) {
+                card.setStatus(Card.Status.INACTIVE);
+                cardRepository.save(card);
+            }
+            throw new RuntimeException("❌ Thẻ đã hết hạn, không thể kích hoạt lại.");
+        }
+
         if (card.getStatus() == Card.Status.ACTIVE) {
             card.setStatus(Card.Status.INACTIVE);
         } else {
@@ -165,6 +173,13 @@ public class CardService {
     }
 
     private CardResponseDTO mapToDTO(Card card) {
+        if (card.getExpiryDate() != null && card.getExpiryDate().isBefore(java.time.LocalDate.now())) {
+            if (card.getStatus() == Card.Status.ACTIVE) {
+                card.setStatus(Card.Status.INACTIVE);
+                cardRepository.save(card);
+            }
+        }
+
         CardResponseDTO dto = new CardResponseDTO();
         dto.setCardId(card.getCardId());
         dto.setCardNumber(card.getCardNumber());

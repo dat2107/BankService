@@ -146,3 +146,16 @@ function searchUsers() {
     const query = document.getElementById("searchInput").value.trim();
     loadUsers(query);
 }
+
+function logout() {
+    // Xóa token JWT trong localStorage
+    localStorage.removeItem("token");
+
+    // Thông báo
+    showToast("Đăng xuất thành công!", "success");
+
+    // Điều hướng về trang login
+    setTimeout(() => {
+        window.location.href = "/login";
+    }, 1000);
+}

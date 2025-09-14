@@ -1,6 +1,5 @@
 document.addEventListener("pageLoaded", async (e) => {
     if (!e.detail.includes("cardManager")) return;
-    await loadCards();
 });
 
 async function loadCards(query = "") {
@@ -10,29 +9,43 @@ async function loadCards(query = "") {
         return;
     }
 
-    let url = "/api/card";
-    if (query) {
-        url += "?q=" + encodeURIComponent(query);
-    }
-
     try {
-        const res = await fetch(url, {
-            headers: { "Authorization": "Bearer " + token }
-        });
+        let cards = [];
 
-        if (!res.ok) {
-            console.error("Failed to fetch cards", res.status);
-            showToast("Không tải được danh sách thẻ", "error");
-            return;
+        if (query) {
+            // 🔍 Gọi API tìm theo số thẻ
+            const res = await fetch(`/api/card/number/${query}`, {
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            if (res.ok) {
+                const card = await res.json();
+                cards = [card]; // ép thành mảng để dùng chung render
+            } else {
+                showToast("Không tìm thấy thẻ", "error");
+            }
+        } else {
+            // 📋 Gọi API lấy tất cả thẻ
+            const res = await fetch("/api/card", {
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            if (res.ok) {
+                cards = await res.json();
+            } else {
+                console.error("Failed to fetch cards", res.status);
+                showToast("Không tải được danh sách thẻ", "error");
+                return;
+            }
         }
 
-        const cards = await res.json();
         renderCardTable(cards);
     } catch (err) {
         console.error("Error loading cards:", err);
         showToast("Lỗi khi tải danh sách thẻ!", "error");
     }
 }
+
 
 function renderCardTable(cards) {
     let tbody = document.getElementById("cardTable");
@@ -99,17 +112,25 @@ function updateStatus(cardId) {
 }
 
 // Gắn sự kiện search
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("pageLoaded", (e) => {
+    if (!e.detail.includes("cardManager")) return;
+
     const searchInput = document.getElementById("searchCard");
     const btnSearch = document.getElementById("btnSearch");
 
-    // Tìm khi nhập
-    searchInput.addEventListener("input", e => {
-        loadCards(e.target.value);
-    });
+    if (searchInput) {
+        searchInput.addEventListener("input", e => {
+            loadCards(e.target.value.trim());
+        });
+    }
 
-    // Tìm khi bấm nút
-    btnSearch.addEventListener("click", () => {
-        loadCards(searchInput.value);
-    });
+    if (btnSearch) {
+        btnSearch.addEventListener("click", () => {
+            loadCards(searchInput.value.trim());
+        });
+    }
+
+    // load danh sách thẻ khi vào trang
+    loadCards();
 });
+

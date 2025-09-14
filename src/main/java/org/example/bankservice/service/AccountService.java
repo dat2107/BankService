@@ -121,7 +121,13 @@ public class AccountService {
             throw new RuntimeException("Không thể xóa tài khoản: còn liên kết thẻ");
         }
 
+        User user = account.getUser();
+
         accountRepository.delete(account);
+
+        if (user != null) {
+            userRepository.delete(user);
+        }
     }
 
     // 🔹 GET BY ID

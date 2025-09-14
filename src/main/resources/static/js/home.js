@@ -29,3 +29,16 @@ window.onpopstate = function(event) {
         loadPage(event.state.path);
     }
 };
+
+function logout() {
+    // Xóa token JWT trong localStorage
+    localStorage.removeItem("token");
+
+    // Thông báo nhỏ
+    showToast("Đăng xuất thành công!", "success");
+
+    // Điều hướng về trang login
+    setTimeout(() => {
+        window.location.href = "/login";
+    }, 1000);
+}

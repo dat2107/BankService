@@ -5,6 +5,12 @@ function initCreateCardForm() {
         return;
     }
 
+    const expiryDateInput = document.getElementById("expiryDate");
+    if (expiryDateInput) {
+        const today = new Date().toISOString().split("T")[0];
+        expiryDateInput.setAttribute("min", today);
+    }
+
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
         console.log("👉 Nút Create Card đã được bấm!");

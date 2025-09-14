@@ -55,7 +55,10 @@ function renderUsersTable(users) {
                                 class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
                             Update
                         </button>
-                        <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Delete</button>
+                        <button onclick="deleteUser(${u.accountId})"
+                                class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                            Delete
+                        </button>
                     </td>
                 </tr>
             `;
@@ -78,6 +81,38 @@ function initSearch() {
     input.addEventListener("input", doSearch);
     // Hoặc bấm nút Search
     btn.addEventListener("click", doSearch);
+}
+
+function deleteUser(accountId) {
+    showConfirm("Bạn có chắc muốn xoá tài khoản này?", async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            showNotify("Bạn chưa đăng nhập!", "Thông báo");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/account/${accountId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (res.ok) {
+                showToast("Xoá tài khoản thành công!", "success");
+                // reload danh sách
+                window.allUsers = window.allUsers.filter(u => u.accountId !== accountId);
+                renderUsersTable(window.allUsers);
+            } else {
+                const msg = await res.text();
+                showToast("Xoá thất bại: " + msg, "error");
+            }
+        } catch (err) {
+            console.error("Error deleting user:", err);
+            showToast("Có lỗi khi xoá tài khoản!", "error");
+        }
+    });
 }
 
 
