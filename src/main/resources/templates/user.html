@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Manager User</title>
+    <title>Quản lý người dùng</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
@@ -10,18 +10,18 @@
 
     <!-- Tiêu đề -->
     <div class="mb-6">
-        <h1 class="text-3xl font-bold mb-2">Manager User</h1>
+        <h1 class="text-3xl font-bold mb-2">Quản lý người dùng</h1>
     </div>
 
     <!-- Table -->
-    <h2 class="text-xl font-semibold mb-4">Table User</h2>
+    <h2 class="text-xl font-semibold mb-4">Bảng người dùng</h2>
 
     <!-- Ô tìm kiếm -->
     <div class="flex justify-between items-center mb-4">
         <div class="relative w-1/3">
-            <input type="text" placeholder="Search by username"
+            <input type="text" placeholder="Tìm kiếm theo tên người dùng"
                    class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-            <button class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">Search</button>
+            <button class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">Tìm kiếm</button>
         </div>
     </div>
 
@@ -29,12 +29,12 @@
         <table class="min-w-full border border-gray-200 text-gray-700">
             <thead class="bg-gray-100">
             <tr>
-                <th class="px-4 py-2 border">ID</th>
-                <th class="px-4 py-2 border">Customer name</th>
+                <th class="px-4 py-2 border">Mã</th>
+                <th class="px-4 py-2 border">Tên khách hàng</th>
                 <th class="px-4 py-2 border">Email</th>
-                <th class="px-4 py-2 border">Phone</th>
-                <th class="px-4 py-2 border">Level</th>
-                <th class="px-4 py-2 border">Actions</th>
+                <th class="px-4 py-2 border">Số điện thoại</th>
+                <th class="px-4 py-2 border">Cấp độ</th>
+                <th class="px-4 py-2 border">Hành động</th>
             </tr>
             </thead>
             <tbody id="userTable">

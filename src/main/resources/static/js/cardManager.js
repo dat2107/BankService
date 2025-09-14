@@ -100,7 +100,16 @@ function updateStatus(cardId) {
 
 // Gắn sự kiện search
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("searchCard").addEventListener("input", e => {
+    const searchInput = document.getElementById("searchCard");
+    const btnSearch = document.getElementById("btnSearch");
+
+    // Tìm khi nhập
+    searchInput.addEventListener("input", e => {
         loadCards(e.target.value);
+    });
+
+    // Tìm khi bấm nút
+    btnSearch.addEventListener("click", () => {
+        loadCards(searchInput.value);
     });
 });

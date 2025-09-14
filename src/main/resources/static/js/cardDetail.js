@@ -42,7 +42,6 @@ document.addEventListener("pageLoaded", async (e) => {
         document.getElementById("balanceId").innerText = balance.balanceId;
         document.getElementById("availableBalance").innerText = balance.availableBalance;
         document.getElementById("holdBalance").innerText = balance.holdBalance;
-        document.getElementById("lastUpdated").innerText = balance.lastUpdated;
     } catch (err) {
         console.error("Error loading card details", err);
         showToast("Lỗi khi tải chi tiết thẻ!", "error");

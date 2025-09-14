@@ -18,11 +18,18 @@ function initCreateCardForm() {
             return;
         }
 
-        // ❌ Không cần gửi accountId nữa
+        const params = new URLSearchParams(window.location.search);
+        const accountId = params.get("accountId");
+
+
         const cardData = {
             cardType: document.getElementById("cardType").value,
             expiryDate: document.getElementById("expiryDate").value
         };
+
+        if (accountId) {
+            cardData.accountId = accountId; // ✅ Admin tạo thẻ cho user
+        }
 
         console.log("📤 Sending card data:", JSON.stringify(cardData));
 
@@ -40,10 +47,14 @@ function initCreateCardForm() {
 
             if (response.ok) {
                 showToast("✅ Tạo thẻ thành công!", "success");
-                setTimeout(() => loadPage("/account"), 1000);
-            } else {
-                const errMsg = await response.text();
-                showToast("❌ Lỗi: " + errMsg, "error");
+                setTimeout(() => {
+                    if (accountId) {
+                        history.back();
+                    } else {
+                        // User tự tạo thẻ
+                        loadPage("/account");
+                    }
+                }, 1000);
             }
         } catch (err) {
             console.error(err);
@@ -52,9 +63,21 @@ function initCreateCardForm() {
     });
 }
 
-document.addEventListener("pageLoaded", (e) => {
-    if (e.detail.includes("/createCard")) {
+function onCreateCardPage(url) {
+    console.log("📌 Checking page:", url);
+    if (url.includes("/createCard")) {
         console.log("📌 CreateCard page loaded");
         initCreateCardForm();
     }
+}
+
+// Khi reload trực tiếp URL
+document.addEventListener("DOMContentLoaded", () => {
+    onCreateCardPage(window.location.pathname + window.location.search);
 });
+
+// Khi load qua SPA
+document.addEventListener("pageLoaded", (e) => {
+    onCreateCardPage(e.detail); // e.detail chính là url truyền trong loadPage
+});
+

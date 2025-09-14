@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface UserLevelRepository extends JpaRepository<UserLevel, Long> {
     Optional<UserLevel> findById(Long id);
+    Optional<UserLevel> findByLevelName(String levelName);
 }

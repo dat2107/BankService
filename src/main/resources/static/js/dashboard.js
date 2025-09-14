@@ -7,7 +7,7 @@ async function loadUsers(query = "") {
 
     let url = "/api/users";
     if (query) {
-        url += "?q=" + encodeURIComponent(query);   // ✅ truyền param search
+        url += "?keyword=" + encodeURIComponent(query);   // ✅ truyền param search
     }
 
     const response = await fetch(url, {
@@ -41,11 +41,6 @@ async function loadUsers(query = "") {
                         ${u.account && u.account.email ? u.account.email : 'N/A'}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">${roleBadge}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">Xem</button>
-                        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">Sửa</button>
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Xóa</button>
-                    </td>
                 </tr>`;
     });
 }
@@ -83,12 +78,6 @@ async function loadPage(url) {
     }
 }
 
-// function navigate(event, url) {
-//     event.preventDefault();               // chặn reload
-//     history.pushState({ path: url }, "", url);  // đổi URL
-//     loadPage(url +"");                        // render nội dung
-// }
-
 function navigate(event, url) {
     event.preventDefault();
 
@@ -108,3 +97,52 @@ window.onpopstate = function(event) {
         loadPage(event.state.path);
     }
 };
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/account", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        if (!res.ok) {
+            console.error("Không thể load danh sách account");
+            return;
+        }
+
+        const accounts = await res.json();
+
+        // Đếm số user
+        const totalUsers = accounts.length;
+
+        // Đếm số thẻ
+        const totalCards = accounts.reduce((sum, acc) => sum + (acc.cards ? acc.cards.length : 0), 0);
+
+        // 👉 Nếu bạn có API transaction riêng thì gọi thêm ở đây
+        let totalTransactions = 0;
+        try {
+            const txRes = await fetch("/api/transaction", {
+                headers: { "Authorization": "Bearer " + token }
+            });
+            if (txRes.ok) {
+                const txData = await txRes.json();
+                totalTransactions = txData.totalElements || txData.length || 0;
+            }
+        } catch (err) {
+            console.warn("Không load được transaction, đặt mặc định = 0");
+        }
+
+        // Cập nhật vào dashboard
+        document.getElementById("statUsers").textContent = totalUsers.toLocaleString();
+        document.getElementById("statCards").textContent = totalCards.toLocaleString();
+        document.getElementById("statTransactions").textContent = totalTransactions.toLocaleString();
+
+    } catch (err) {
+        console.error("Lỗi khi load stats:", err);
+    }
+});
+
+function searchUsers() {
+    const query = document.getElementById("searchInput").value.trim();
+    loadUsers(query);
+}

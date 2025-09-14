@@ -117,17 +117,15 @@ document.addEventListener("pageLoaded", async (e) => {
             });
 
             if (!resReq.ok) {
-                let errMsg;
-                try {
-                    const errObj = await resReq.json();   // nếu backend trả JSON {error: "..."}
-                    errMsg = errObj.error || JSON.stringify(errObj);
-                } catch {
-                    errMsg = await resReq.text();         // fallback: plain text
+                let errMsg = await resReq.text();
+
+                if (errMsg.includes("hạn mức")) {
+                    showNotify("Bạn đã vượt quá hạn mức chuyển khoản trong ngày! Vui lòng thử lại vào ngày mai hoặc nâng cấp tài khoản.", "Cảnh báo");
+                } else {
+                    showToast(errMsg || "Không tạo được giao dịch!", "error");
                 }
-                showToast(errMsg || "Không tạo được giao dịch!", "error");
                 return;
             }
-
 
             const result = await resReq.json();
             showNotify("Mã OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận.", "Thông báo");

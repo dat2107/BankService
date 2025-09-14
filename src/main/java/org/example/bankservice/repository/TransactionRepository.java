@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TransactionRepository  extends JpaRepository<Transaction, Long> {
@@ -35,4 +36,12 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
     List<Transaction> findByFromCard_CardIdAndStatusIn(Long cardId, List<Transaction.TransactionStatus> statuses);
 
     List<Transaction> findByFromCard_Account_AccountIdOrToCard_Account_AccountId(Long fromAccountId, Long toAccountId);
+
+    List<Transaction> findByFromCard_Account_AccountIdAndStatusAndCreatedAtBetween(
+            Long accountId,
+            Transaction.TransactionStatus status,
+            LocalDateTime start,
+            LocalDateTime end
+    );
+
 }

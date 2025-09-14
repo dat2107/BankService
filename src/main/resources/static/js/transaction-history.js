@@ -45,6 +45,8 @@ function renderTransactions(transactions) {
         "WITHDRAW": "RÚT"
     };
 
+    transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     transactions.forEach(t => {
         // Xác định vai trò: CHUYỂN hay NHẬN
         let direction = "";

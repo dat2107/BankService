@@ -47,6 +47,9 @@ public class AccountService {
         account.setCustomerName(accountDTO.getCustomerName());
         account.setEmail(accountDTO.getEmail());
         account.setPhoneNumber(accountDTO.getPhoneNumber());
+        UserLevel normalLevel = userLevelRepository.findByLevelName("Normal")
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Level Normal"));
+        account.setUserLevel(normalLevel);
         account.setUser(savedUser);
 
         Balance balance = new Balance();
@@ -135,6 +138,14 @@ public class AccountService {
         return accountRepository.findAll().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Caching(evict = {
+            @CacheEvict(value = "accounts_dto", key = "#accountId"),
+            @CacheEvict(value = "accounts_all_dto", allEntries = true)
+    })
+    public void evictAccountCache(Long accountId) {
+
     }
 
     // 🔹 MAPPER

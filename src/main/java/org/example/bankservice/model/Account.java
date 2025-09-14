@@ -42,7 +42,7 @@ public class Account {
     @JsonIgnoreProperties({"account"})
     private List<Card> cards = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "level_id", referencedColumnName = "id")
     private UserLevel userLevel;
 

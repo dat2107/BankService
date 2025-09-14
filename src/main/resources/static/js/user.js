@@ -25,6 +25,8 @@ document.addEventListener("pageLoaded", async (e) => {
         // render lần đầu và load select
         renderUsersTable(users);
 
+        initSearch();
+
     } catch (err) {
         console.error("Error loading users:", err);
     }
@@ -60,5 +62,22 @@ function renderUsersTable(users) {
     });
 }
 
+function initSearch() {
+    const input = document.querySelector("input[placeholder='Tìm kiếm theo tên người dùng']");
+    const btn = input.nextElementSibling; // nút search bên phải
+
+    function doSearch() {
+        const keyword = input.value.trim().toLowerCase();
+        const filtered = window.allUsers.filter(u =>
+            u.customerName.toLowerCase().includes(keyword)
+        );
+        renderUsersTable(filtered);
+    }
+
+    // Gõ phím tự động lọc
+    input.addEventListener("input", doSearch);
+    // Hoặc bấm nút Search
+    btn.addEventListener("click", doSearch);
+}
 
 

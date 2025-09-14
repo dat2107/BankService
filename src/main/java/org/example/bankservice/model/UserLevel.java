@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -22,7 +24,7 @@ public class UserLevel {
     private Integer cardLimit;
 
     @Column(name = "daily_transfer_limit", nullable = false)
-    private Double dailyTransferLimit;
+    private BigDecimal dailyTransferLimit;
 
 
 }

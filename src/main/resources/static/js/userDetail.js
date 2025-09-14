@@ -36,6 +36,9 @@ function renderUserDetail(account) {
     document.getElementById("userName").innerText = account.customerName;
     document.getElementById("userPhone").innerText = account.phoneNumber;
 
+    const btn = document.getElementById("btnCreateCard");
+    btn.setAttribute("data-account-id", account.accountId);
+
     // Render cards
     const container = document.getElementById("cardsContainer");
     container.innerHTML = account.cards.map(card => `

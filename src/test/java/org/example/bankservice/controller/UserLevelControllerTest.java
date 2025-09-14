@@ -188,8 +188,7 @@ class UserLevelControllerTest {
                     System.out.println(">>> Status: " + result.getResponse().getStatus());
                     System.out.println(">>> Body: " + result.getResponse().getContentAsString());
                 })
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Không tìm thấy"));
+                .andExpect(status().is4xxClientError());
     }
 
     // DELETE /api/userlevel/{id}

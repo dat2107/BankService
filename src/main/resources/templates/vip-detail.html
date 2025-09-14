@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>User Levels List</title>
+    <title>Danh sách cấp độ người dùng</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
 <div class="max-w-5xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">User Levels List</h2>
-        <a  onclick="openAddModal()"
+        <h2 class="text-2xl font-bold">Danh sách cấp độ người dùng</h2>
+        <a onclick="openAddModal()"
            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Add New User Level
+            Thêm cấp độ mới
         </a>
     </div>
 
@@ -20,11 +20,11 @@
         <table class="min-w-full border border-gray-200 text-gray-700">
             <thead class="bg-gray-800 text-white">
             <tr>
-                <th class="px-4 py-2 border">ID</th>
-                <th class="px-4 py-2 border">Level Name</th>
-                <th class="px-4 py-2 border">Card Limit</th>
-                <th class="px-4 py-2 border">Daily Transfer Limit</th>
-                <th class="px-4 py-2 border">Actions</th>
+                <th class="px-4 py-2 border">Mã</th>
+                <th class="px-4 py-2 border">Tên cấp độ</th>
+                <th class="px-4 py-2 border">Giới hạn thẻ</th>
+                <th class="px-4 py-2 border">Giới hạn chuyển khoản/ngày</th>
+                <th class="px-4 py-2 border">Thao tác</th>
             </tr>
             </thead>
             <tbody id="levelTableBody" class="text-center">
@@ -36,31 +36,33 @@
     <div class="mt-6">
         <a href="user-level" onclick="navigate(event, 'user-level')"
            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Back
+            Quay lại
         </a>
     </div>
 </div>
+
+<!-- Modal -->
 <div id="userLevelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg w-96 p-6">
-        <h2 id="modalTitle" class="text-xl font-bold mb-4">Add User Level</h2>
+        <h2 id="modalTitle" class="text-xl font-bold mb-4">Thêm cấp độ người dùng</h2>
 
-        <form id="userLevelForm" onsubmit="return false;" class="space-y-4" >
+        <form id="userLevelForm" onsubmit="return false;" class="space-y-4">
             <input type="hidden" name="id" id="levelId"/>
 
             <div>
-                <label class="block font-semibold mb-1">Level Name</label>
+                <label class="block font-semibold mb-1">Tên cấp độ</label>
                 <input type="text" name="levelName" id="levelName" required
                        class="w-full border rounded px-3 py-2"/>
             </div>
 
             <div>
-                <label class="block font-semibold mb-1">Card Limit</label>
+                <label class="block font-semibold mb-1">Giới hạn thẻ</label>
                 <input type="number" name="cardLimit" id="cardLimit" required
                        class="w-full border rounded px-3 py-2"/>
             </div>
 
             <div>
-                <label class="block font-semibold mb-1">Daily Transfer Limit</label>
+                <label class="block font-semibold mb-1">Giới hạn chuyển khoản/ngày</label>
                 <input type="number" name="dailyTransferLimit" id="dailyTransferLimit" required
                        class="w-full border rounded px-3 py-2"/>
             </div>
@@ -68,16 +70,17 @@
             <div class="flex justify-end space-x-3">
                 <button type="button" onclick="closeModal()"
                         class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">
-                    Cancel
+                    Hủy
                 </button>
                 <button type="button" id="saveBtn"
                         class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                    Save
+                    Lưu
                 </button>
             </div>
         </form>
     </div>
 </div>
+
 <script src="/js/userlevel.js"></script>
 </body>
 </html>

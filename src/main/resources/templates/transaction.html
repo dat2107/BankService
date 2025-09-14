@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Transactions List</title>
+    <title>Danh sách giao dịch</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
 <div class="max-w-6xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Table Transactions</h2>
+        <h2 class="text-2xl font-bold">Bảng giao dịch</h2>
     </div>
 
-    <!-- Bảng danh sách transaction -->
+    <!-- Bảng danh sách giao dịch -->
     <div class="overflow-x-auto">
         <table class="min-w-full border border-gray-200 text-gray-700">
             <thead>
             <tr class="bg-gray-100">
-                <th class="px-4 py-2 border">ID</th>
-                <th class="px-4 py-2 border">FromCardNumber</th>
-                <th class="px-4 py-2 border">ToCardNumber</th>
-                <th class="px-4 py-2 border">Amount</th>
-                <th class="px-4 py-2 border">Transaction Type</th>
-                <th class="px-4 py-2 border">Status</th>
-                <th class="px-4 py-2 border">Actions</th>
+                <th class="px-4 py-2 border">Mã</th>
+                <th class="px-4 py-2 border">Thẻ nguồn</th>
+                <th class="px-4 py-2 border">Thẻ đích</th>
+                <th class="px-4 py-2 border">Số tiền</th>
+                <th class="px-4 py-2 border">Loại giao dịch</th>
+                <th class="px-4 py-2 border">Trạng thái</th>
+                <th class="px-4 py-2 border">Hành động</th>
             </tr>
             </thead>
             <tbody id="transactionTable">
@@ -31,7 +31,7 @@
         </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Phân trang -->
     <div class="flex justify-center mt-4 space-x-2">
         <button id="prevPage" class="px-3 py-1 border rounded bg-gray-200">«</button>
         <span id="currentPage" class="px-3 py-1 border rounded bg-blue-500 text-white">1</span>

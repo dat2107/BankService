@@ -29,6 +29,8 @@ public class TransferService {
     private BalanceRepository balanceRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private AccountService accountService;
 
     /**
      * Bước 1: Tạo giao dịch và sinh OTP
@@ -63,6 +65,26 @@ public class TransferService {
 
         if (toCard.getStatus() == Card.Status.INACTIVE) {
             throw new RuntimeException("Thẻ nhận đã bị vô hiệu hóa, không thể chuyển khoản");
+        }
+
+        // Kiểm tra giới hạn giao dịch hằng ngày (Daily Transfer Limit)
+        Account fromAccount = fromCard.getAccount();
+
+        // Tính tổng số tiền đã chuyển thành công trong ngày hôm nay
+        BigDecimal todayTotal = transactionRepo
+                .findByFromCard_Account_AccountIdAndStatusAndCreatedAtBetween(
+                        fromAccount.getAccountId(),
+                        Transaction.TransactionStatus.SUCCESS,
+                        LocalDateTime.now().toLocalDate().atStartOfDay(),
+                        LocalDateTime.now().toLocalDate().atTime(23, 59, 59)
+                )
+                .stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal dailyLimit = fromAccount.getUserLevel().getDailyTransferLimit();
+        if (todayTotal.add(dto.getAmount()).compareTo(dailyLimit) > 0) {
+            throw new RuntimeException("Vượt quá hạn mức chuyển khoản trong ngày (" + dailyLimit + ")");
         }
 
         // Tạo transaction
@@ -139,6 +161,8 @@ public class TransferService {
         tx.setStatus(Transaction.TransactionStatus.WAITING_APPROVAL);
         transactionRepo.save(tx);
 
+        accountService.evictAccountCache(fromCard.getAccount().getAccountId());
+
         return toDto(tx);
     }
 
@@ -185,6 +209,9 @@ public class TransferService {
         // Lưu account
         accountRepository.save(fromCard.getAccount());
         accountRepository.save(toCard.getAccount());
+
+        accountService.evictAccountCache(fromCard.getAccount().getAccountId());
+        accountService.evictAccountCache(toCard.getAccount().getAccountId());
 
         System.out.println(">>> Đã save cả 2 account vào DB");
 
@@ -236,6 +263,8 @@ public class TransferService {
         tx.setStatus(Transaction.TransactionStatus.FAILED);
         transactionRepo.save(tx);
 
+        accountService.evictAccountCache(fromCard.getAccount().getAccountId());
+
         // ✅ Gửi email thông báo bị từ chối (best-effort, không phá giao dịch nếu gửi lỗi)
         try {
             String toEmail = fromCard.getAccount().getEmail();
@@ -267,8 +296,7 @@ public class TransferService {
                 emailService.sendEmail(toEmail, subject, html);
             }
         } catch (Exception ignore) {
-            // log nhẹ nếu bạn muốn, nhưng không ném lỗi để tránh rollback vì lỗi gửi email
-            // e.g. logger.warn("Send reject email failed", ignore);
+
         }
 
         return toDto(tx);

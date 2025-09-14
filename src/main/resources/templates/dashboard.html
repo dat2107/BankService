@@ -92,7 +92,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-blue-100 text-sm font-medium">Người dùng</p>
-                        <p class="text-3xl font-bold">1,234</p>
+                        <p id="statUsers" class="text-3xl font-bold">1,234</p>
                     </div>
                     <div class="text-4xl opacity-80">👥</div>
                 </div>
@@ -102,7 +102,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-orange-100 text-sm font-medium">Thẻ ngân hàng</p>
-                        <p class="text-3xl font-bold">856</p>
+                        <p id="statCards" class="text-3xl font-bold">856</p>
                     </div>
                     <div class="text-4xl opacity-80">💳</div>
                 </div>
@@ -112,21 +112,12 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-100 text-sm font-medium">Giao dịch</p>
-                        <p class="text-3xl font-bold">2,567</p>
+                        <p id="statTransactions" class="text-3xl font-bold">2,567</p>
                     </div>
                     <div class="text-4xl opacity-80">💰</div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-red-500 to-red-600 p-6 rounded-xl text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-red-100 text-sm font-medium">Cảnh báo</p>
-                        <p class="text-3xl font-bold">12</p>
-                    </div>
-                    <div class="text-4xl opacity-80">⚠️</div>
-                </div>
-            </div>
         </div>
 
         <!-- User Table -->
@@ -141,9 +132,6 @@
                             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         🔍 Tìm kiếm
                     </button>
-                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        + Tạo người dùng
-                    </button>
                 </div>
             </div>
 
@@ -156,7 +144,6 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên đăng nhập</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vai trò</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
                     </tr>
                     </thead>
                     <tbody  id="userTableBody"  class="bg-white divide-y divide-gray-200">
@@ -176,6 +163,7 @@
 <script src="/js/userDetail.js"></script>
 <script src="/js/cardManager.js"></script>
 <script src="/js/cardDetail.js"></script>
+<script src="/js/createCard.js"></script>
 <script src="/js/user-level.js"></script>
 <script src="/js/vip-detail.js"></script>
 <script src="/js/userDetail.js"></script>

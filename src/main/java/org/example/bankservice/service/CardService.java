@@ -3,14 +3,8 @@ package org.example.bankservice.service;
 import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.CardDTO;
 import org.example.bankservice.dto.CardResponseDTO;
-import org.example.bankservice.model.Account;
-import org.example.bankservice.model.Balance;
-import org.example.bankservice.model.Card;
-import org.example.bankservice.model.Transaction;
-import org.example.bankservice.repository.AccountRepository;
-import org.example.bankservice.repository.BalanceRepository;
-import org.example.bankservice.repository.CardRepository;
-import org.example.bankservice.repository.TransactionRepository;
+import org.example.bankservice.model.*;
+import org.example.bankservice.repository.*;
 import org.example.bankservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -34,6 +28,8 @@ public class CardService {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private UserLevelRepository userLevelRepository;
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Transactional
@@ -53,6 +49,14 @@ public class CardService {
         }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        int currentCards = cardRepository.countByAccount_AccountId(accountId);
+
+        UserLevel userLevel = account.getUserLevel();
+
+        if (userLevel.getCardLimit() != -1 && currentCards >= userLevel.getCardLimit()) {
+            throw new RuntimeException("Đã đạt giới hạn số thẻ cho cấp độ này");
+        }
+
         Card card = new Card();
         card.setAccount(account);
         card.setCardType(cardDTO.getCardType());
