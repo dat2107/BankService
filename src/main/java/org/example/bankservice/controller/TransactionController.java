@@ -23,10 +23,7 @@ public class TransactionController {
     @Autowired
     private TransactionRepository transactionRepo;
 
-    /**
-     * Lấy tất cả giao dịch (Admin)
-     * Có thể filter theo status: /api/transaction?status=SUCCESS
-     */
+    //Lấy tất cả giao dịch (Admin)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<TransactionDTO>> getAll(
@@ -36,18 +33,14 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getAll(status, page, size));
     }
 
-    /**
-     * Lấy giao dịch theo accountId (User)
-     */
+    //Lấy giao dịch theo accountId (User)
     @GetMapping("/account/{accountId}")
     public ResponseEntity<List<TransactionDTO>> getTransactionsByAccount(@PathVariable Long accountId) {
         List<TransactionDTO> transactions = transactionService.findByAccountId(accountId);
         return ResponseEntity.ok(transactions);
     }
 
-    /**
-     * Lấy giao dịch theo cardId (User)
-     */
+    //Lấy giao dịch theo cardId (User)
     @GetMapping("/card/{cardId}")
     public ResponseEntity<Page<TransactionDTO>> getByCard(
             @PathVariable Long cardId,
@@ -57,9 +50,7 @@ public class TransactionController {
     }
 
 
-    /**
-     * Cập nhật trạng thái giao dịch
-     */
+    //Cập nhật trạng thái giao dịch
     @PutMapping("/{id}/status")
     public ResponseEntity<TransactionDTO> updateStatus(
             @PathVariable Long id,
@@ -67,9 +58,7 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.updateStatus(id, request.getStatus()));
     }
 
-    /**
-     * Xem chi tiết 1 giao dịch
-     */
+    //Xem chi tiết 1 giao dịch
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getOne(@PathVariable Long id) {
         return transactionRepo.findById(id)

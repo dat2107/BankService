@@ -20,9 +20,7 @@ public class TransferController {
     @Autowired
     private TransferService transferService;
 
-    /**
-     * B1: User tạo yêu cầu chuyển khoản -> sinh OTP gửi email
-     */
+    // User tạo yêu cầu chuyển khoản -> sinh OTP gửi email
     @PostMapping("/request")
     public ResponseEntity<?> requestTransfer(@RequestBody TransferDTO dto) {
         Transaction tx = transferService.createTransferRequest(dto);
@@ -35,9 +33,7 @@ public class TransferController {
     }
 
 
-    /**
-     * B2: User nhập OTP để xác nhận giao dịch
-     */
+    //User nhập OTP để xác nhận giao dịch
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmOtp(@RequestBody OtpConfirmDTO dto) {
         TransactionDTO tx = transferService.confirmOtp(dto);
