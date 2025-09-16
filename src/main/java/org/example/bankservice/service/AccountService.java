@@ -27,7 +27,7 @@ public class AccountService {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private EmailService emailService;
 
-    // 🔹 CREATE
+    // CREATE
     @CachePut(value = "accounts_dto", key = "#result.accountId")
     public AccountResponseDTO create(AccountDTO accountDTO){
         if (userRepository.findByUsername(accountDTO.getUsername()).isPresent()) {
@@ -75,7 +75,7 @@ public class AccountService {
         return mapToDTO(saved);
     }
 
-    // 🔹 UPDATE
+    // UPDATE
     @Caching(
             put = { @CachePut(value = "accounts_dto", key = "#id") },
             evict = { @CacheEvict(value = "accounts_all_dto", allEntries = true) }
@@ -100,7 +100,7 @@ public class AccountService {
         return mapToDTO(saved);
     }
 
-    // 🔹 DELETE
+    //DELETE
     @Caching(evict = {
             @CacheEvict(value = "accounts_dto", key = "#accountId"),
             @CacheEvict(value = "accounts_all_dto", allEntries = true)
@@ -130,7 +130,7 @@ public class AccountService {
         }
     }
 
-    // 🔹 GET BY ID
+    //GET BY ID
     @Cacheable(value = "accounts_dto", key = "#accountId")
     public AccountResponseDTO getAccountById(Long accountId) {
         Account acc = accountRepository.findByIdWithCards(accountId)
@@ -138,7 +138,7 @@ public class AccountService {
         return mapToDTO(acc);
     }
 
-    // 🔹 GET ALL
+    //GET ALL
     @Cacheable(value = "accounts_all_dto")
     public List<AccountResponseDTO> getAllAccount() {
         return accountRepository.findAll().stream()
@@ -154,7 +154,7 @@ public class AccountService {
 
     }
 
-    // 🔹 MAPPER
+    //MAPPER
     public AccountResponseDTO mapToDTO(Account acc) {
         AccountResponseDTO dto = new AccountResponseDTO();
         dto.setAccountId(acc.getAccountId());

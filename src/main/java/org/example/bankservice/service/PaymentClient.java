@@ -10,7 +10,7 @@ public class PaymentClient {
     private final RestTemplate restTemplate;
 
     @Value("${payment.service.url}")
-    private String paymentServiceUrl;  // ví dụ: http://localhost:8081/api/payments
+    private String paymentServiceUrl;
 
     public PaymentClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

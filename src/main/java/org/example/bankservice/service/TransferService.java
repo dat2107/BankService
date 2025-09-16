@@ -32,9 +32,7 @@ public class TransferService {
     @Autowired
     private AccountService accountService;
 
-    /**
-     * Bước 1: Tạo giao dịch và sinh OTP
-     */
+    //Bước 1: Tạo giao dịch và sinh OTP
     @Transactional
     public Transaction createTransferRequest(TransferDTO dto) {
         Card fromCard = cardRepo.findById(dto.getFromCardId())
@@ -116,10 +114,7 @@ public class TransferService {
         return tx;
     }
 
-    /**
-     * Bước 2: Xác nhận OTP -> chuyển trạng thái sang WAITING_APPROVAL
-     * và chuyển tiền từ availableBalance -> holdBalance (người gửi)
-     */
+    //Xác nhận OTP -> chuyển trạng thái sang WAITING_APPROVAL
     @Transactional
     public TransactionDTO confirmOtp(OtpConfirmDTO dto) {
         OtpTransaction otpTx = otpRepo.findByTransaction_TransactionId(dto.getTransactionId());
@@ -166,9 +161,7 @@ public class TransferService {
         return toDto(tx);
     }
 
-    /**
-     * Bước 3a: Admin duyệt giao dịch
-     */
+    //Admin duyệt giao dịch
     @Transactional
     public TransactionDTO approveTransaction(Long transactionId) {
         Transaction tx = transactionRepo.findById(transactionId)
@@ -235,9 +228,7 @@ public class TransferService {
         return toDto(tx);
     }
 
-    /**
-     * Bước 3b: Admin từ chối giao dịch
-     */
+    // Admin từ chối giao dịch
     @Transactional
     public TransactionDTO rejectTransaction(Long transactionId) {
         Transaction tx = transactionRepo.findById(transactionId)
@@ -265,7 +256,7 @@ public class TransferService {
 
         accountService.evictAccountCache(fromCard.getAccount().getAccountId());
 
-        // ✅ Gửi email thông báo bị từ chối (best-effort, không phá giao dịch nếu gửi lỗi)
+        //Gửi email thông báo bị từ chối (best-effort, không phá giao dịch nếu gửi lỗi)
         try {
             String toEmail = fromCard.getAccount().getEmail();
             if (toEmail != null && !toEmail.isBlank()) {
