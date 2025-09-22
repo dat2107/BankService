@@ -7,7 +7,7 @@ import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.repository.AccountRepository;
 import org.example.bankservice.security.JwtUtil;
-import org.example.bankservice.service.AccountService;
+import org.example.bankservice.service.account.AccountServiceImpl;
 import org.example.bankservice.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +26,6 @@ import java.util.Optional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 
 @WebMvcTest(AuthController.class)
@@ -50,7 +49,7 @@ class AuthControllerTest {
     private JwtUtil jwtUtil;
 
     @MockitoBean
-    private AccountService accountService;
+    private AccountServiceImpl accountService;
 
     @MockitoBean
     private UserDetailsService userDetailsService;

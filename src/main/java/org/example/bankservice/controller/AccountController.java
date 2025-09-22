@@ -4,7 +4,7 @@ import org.example.bankservice.dto.AccountDTO;
 import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.repository.AccountRepository;
-import org.example.bankservice.service.AccountService;
+import org.example.bankservice.service.account.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/account")
 public class AccountController {
     @Autowired
-    private AccountService accountService;
+    private AccountServiceImpl accountService;
     @Autowired
     private AccountRepository accountRepository;
 
@@ -25,24 +25,12 @@ public class AccountController {
         return ResponseEntity.ok("Thêm thành công! " + account);
     }
 
-//    @GetMapping("/{accountId}")
-//    public ResponseEntity<Account> getAccount(@PathVariable Long accountId){
-//        Account account = accountService.getAccountById(accountId);
-//        return ResponseEntity.ok(account);
-//    }
 
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountResponseDTO> getAccount(@PathVariable Long accountId) {
         AccountResponseDTO account = accountService.getAccountById(accountId);
         return ResponseEntity.ok(account);
     }
-
-
-//    @GetMapping
-//    public ResponseEntity<List<Account>> getAllAccount(){
-//        List<Account> accounts = accountService.getAllAccount();
-//        return ResponseEntity.ok(accounts);
-//    }
 
     @GetMapping
     public ResponseEntity<List<AccountResponseDTO>> getAllAccount() {

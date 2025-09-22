@@ -1,6 +1,7 @@
-package org.example.bankservice.service;
+package org.example.bankservice.service.balance;
 
 import org.example.bankservice.dto.BalanceDTO;
+import org.example.bankservice.mapper.BalanceMapper;
 import org.example.bankservice.model.Balance;
 import org.example.bankservice.model.Card;
 import org.example.bankservice.model.Transaction;
@@ -8,14 +9,16 @@ import org.example.bankservice.repository.AccountRepository;
 import org.example.bankservice.repository.BalanceRepository;
 import org.example.bankservice.repository.CardRepository;
 import org.example.bankservice.repository.TransactionRepository;
+import org.example.bankservice.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
-public class BalanceService {
+public class BalanceServiceImpl implements BalanceService {
     @Autowired
     private BalanceRepository balanceRepository;
 
@@ -31,13 +34,21 @@ public class BalanceService {
     @Autowired
     private EmailService emailService;
 
-    public Balance getBalance(Long accountId) {
-        return balanceRepository.findByAccount_AccountId(accountId)
+    @Autowired
+    private BalanceMapper balanceMapper;
+
+    @Override
+    public BalanceDTO getBalance(Long accountId) {
+        Balance balance = balanceRepository.findByAccount_AccountId(accountId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy số dư cho accountId = " + accountId));
+        return balanceMapper.toDto(balance);
     }
 
-    public Balance deposit(Long accountId, BigDecimal amount, Long toCardId) {
-        Balance balance = getBalance(accountId);
+    @Override
+    @Transactional
+    public BalanceDTO deposit(Long accountId, BigDecimal amount, Long toCardId) {
+        Balance balance = balanceRepository.findByAccount_AccountId(accountId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy số dư cho accountId = " + accountId));
         balance.setAvailableBalance(balance.getAvailableBalance().add(amount));
         Balance saved = balanceRepository.save(balance);
 
@@ -69,11 +80,14 @@ public class BalanceService {
             );
         }
 
-        return saved;
+        return balanceMapper.toDto(saved);
     }
 
-    public Balance withdraw(Long accountId, BigDecimal amount, Long fromCardId) {
-        Balance balance = getBalance(accountId);
+    @Override
+    @Transactional
+    public BalanceDTO withdraw(Long accountId, BigDecimal amount, Long fromCardId) {
+        Balance balance = balanceRepository.findByAccount_AccountId(accountId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy số dư cho accountId = " + accountId));
         if (balance.getAvailableBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Số dư không đủ để rút tiền");
         }
@@ -107,18 +121,7 @@ public class BalanceService {
             );
         }
 
-        return saved;
+        return balanceMapper.toDto(saved);
     }
-
-    public BalanceDTO mapToDTO(Balance balance) {
-        BalanceDTO dto = new BalanceDTO();
-        dto.setBalanceId(balance.getBalanceId());
-        dto.setAccountId(balance.getAccount().getAccountId());
-        dto.setAvailableBalance(balance.getAvailableBalance());
-        dto.setHoldBalance(balance.getHoldBalance());
-        dto.setLastUpdated(balance.getLastUpdated());
-        return dto;
-    }
-
 
 }

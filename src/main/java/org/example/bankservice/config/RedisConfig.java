@@ -33,7 +33,6 @@ public class RedisConfig {
 
         objectMapper.registerModule(new Hibernate6Module()
                 .configure(Hibernate6Module.Feature.FORCE_LAZY_LOADING, false));
-        // Thêm type info
         objectMapper.activateDefaultTyping(
                 LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL

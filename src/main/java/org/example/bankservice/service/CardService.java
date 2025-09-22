@@ -3,9 +3,11 @@ package org.example.bankservice.service;
 import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.CardDTO;
 import org.example.bankservice.dto.CardResponseDTO;
+import org.example.bankservice.mapper.AccountMapper;
 import org.example.bankservice.model.*;
 import org.example.bankservice.repository.*;
 import org.example.bankservice.security.JwtUtil;
+import org.example.bankservice.service.account.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -26,7 +28,7 @@ public class CardService {
     @Autowired
     private TransactionRepository transactionRepository;
     @Autowired
-    private AccountService accountService;
+    private AccountMapper accountMapper;
     @Autowired
     private UserLevelRepository userLevelRepository;
     @Autowired
@@ -40,11 +42,11 @@ public class CardService {
     })
     public CardResponseDTO create(CardDTO cardDTO, String token) {
         Long accountId ;
-        // ✅ Nếu cardDTO có accountId -> admin đang tạo thẻ cho user
+        //Nếu cardDTO có accountId -> admin đang tạo thẻ cho user
         if (cardDTO.getAccountId() != null) {
             accountId = cardDTO.getAccountId();
         } else {
-            // ✅ User tự tạo thẻ -> lấy accountId từ token
+            //User tự tạo thẻ -> lấy accountId từ token
             accountId = jwtUtil.extractAccountId(token);
         }
         Account account = accountRepository.findById(accountId)
@@ -112,7 +114,7 @@ public class CardService {
     public CardResponseDTO getById(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ"));
-        return mapToDTO(card); // ✅ khớp kiểu dữ liệu
+        return mapToDTO(card); //khớp kiểu dữ liệu
     }
 
     @Transactional
@@ -188,7 +190,7 @@ public class CardService {
         dto.setExpiryDate(card.getExpiryDate());
 
 
-        AccountResponseDTO accDto = accountService.mapToDTO(card.getAccount());
+        AccountResponseDTO accDto = accountMapper.toDto(card.getAccount());
         dto.setAccount(accDto);
 
         return dto;

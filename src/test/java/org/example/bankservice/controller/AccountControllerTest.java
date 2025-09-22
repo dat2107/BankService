@@ -7,7 +7,7 @@ import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.repository.AccountRepository;
 import org.example.bankservice.security.JwtUtil;
-import org.example.bankservice.service.AccountService;
+import org.example.bankservice.service.account.AccountServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,7 +36,7 @@ class AccountControllerTest {
     @MockitoBean
     private JwtUtil jwtUtil;
     @MockitoBean
-    private AccountService accountService;
+    private AccountServiceImpl accountService;
     @MockitoBean
     private AccountRepository accountRepository;
     @MockitoBean

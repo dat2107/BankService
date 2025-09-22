@@ -2,6 +2,8 @@ package org.example.bankservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,12 +21,15 @@ public class Transaction {
     private Long transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "from_card_id", nullable = true)
+    @JoinColumn(name = "from_card_id", nullable = true, foreignKey = @ForeignKey(name = "fk_transaction_from_card"))
+    @OnDelete(action = OnDeleteAction.NO_ACTION) // Hibernate-level, nhưng DB mới quan trọng
     private Card fromCard;
 
     @ManyToOne
-    @JoinColumn(name = "to_card_id", nullable = true)
+    @JoinColumn(name = "to_card_id", nullable = true, foreignKey = @ForeignKey(name = "fk_transaction_to_card"))
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Card toCard;
+
 
     @Column(nullable = false)
     private BigDecimal amount;

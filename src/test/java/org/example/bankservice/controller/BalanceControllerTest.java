@@ -5,7 +5,7 @@ import org.example.bankservice.config.SecurityConfig;
 import org.example.bankservice.dto.BalanceDTO;
 import org.example.bankservice.model.Balance;
 import org.example.bankservice.security.JwtUtil;
-import org.example.bankservice.service.BalanceService;
+import org.example.bankservice.service.balance.BalanceServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,23 +28,19 @@ class BalanceControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockitoBean private BalanceService balanceService;
+    @MockitoBean private BalanceServiceImpl balanceService;
     @MockitoBean private JwtUtil jwtUtil;
     @MockitoBean private UserDetailsService userDetailsService;
 
     // GET /api/balance/{accountId}
     @Test
     void getBalance_success() throws Exception {
-        Balance balance = new Balance();
-        balance.setBalanceId(1L);
-        balance.setAvailableBalance(new BigDecimal("1000"));
 
         BalanceDTO dto = new BalanceDTO();
         dto.setBalanceId(1L);
         dto.setAvailableBalance(new BigDecimal("1000"));
 
-        Mockito.when(balanceService.getBalance(1L)).thenReturn(balance);
-        Mockito.when(balanceService.mapToDTO(balance)).thenReturn(dto);
+        Mockito.when(balanceService.getBalance(1L)).thenReturn(dto);
 
         mockMvc.perform(get("/api/balance/1"))
                 .andDo(result -> {
@@ -73,17 +69,12 @@ class BalanceControllerTest {
     // POST /api/balance/{accountId}/deposit
     @Test
     void deposit_success() throws Exception {
-        Balance balance = new Balance();
-        balance.setBalanceId(1L);
-        balance.setAvailableBalance(new BigDecimal("1500"));
-
         BalanceDTO dto = new BalanceDTO();
         dto.setBalanceId(1L);
         dto.setAvailableBalance(new BigDecimal("1500"));
 
         Mockito.when(balanceService.deposit(1L, new BigDecimal("500"), 10L))
-                .thenReturn(balance);
-        Mockito.when(balanceService.mapToDTO(balance)).thenReturn(dto);
+                .thenReturn(dto);
 
         mockMvc.perform(post("/api/balance/1/deposit")
                         .param("amount", "500")
@@ -117,17 +108,12 @@ class BalanceControllerTest {
     // POST /api/balance/{accountId}/withdraw
     @Test
     void withdraw_success() throws Exception {
-        Balance balance = new Balance();
-        balance.setBalanceId(1L);
-        balance.setAvailableBalance(new BigDecimal("800"));
-
         BalanceDTO dto = new BalanceDTO();
         dto.setBalanceId(1L);
         dto.setAvailableBalance(new BigDecimal("800"));
 
         Mockito.when(balanceService.withdraw(1L, new BigDecimal("200"), 20L))
-                .thenReturn(balance);
-        Mockito.when(balanceService.mapToDTO(balance)).thenReturn(dto);
+                .thenReturn(dto);
 
         mockMvc.perform(post("/api/balance/1/withdraw")
                         .param("amount", "200")

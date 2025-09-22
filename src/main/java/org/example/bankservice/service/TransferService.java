@@ -7,6 +7,7 @@ import org.example.bankservice.dto.TransferDTO;
 import org.example.bankservice.dto.OtpConfirmDTO;
 import org.example.bankservice.model.*;
 import org.example.bankservice.repository.*;
+import org.example.bankservice.service.account.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ public class TransferService {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private AccountService accountService;
+    private AccountServiceImpl accountService;
 
     //Bước 1: Tạo giao dịch và sinh OTP
     @Transactional

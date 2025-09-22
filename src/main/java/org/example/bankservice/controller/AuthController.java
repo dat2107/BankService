@@ -1,12 +1,11 @@
 package org.example.bankservice.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.example.bankservice.dto.AccountDTO;
 import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.UserDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.repository.AccountRepository;
-import org.example.bankservice.service.AccountService;
+import org.example.bankservice.service.account.AccountServiceImpl;
 import org.example.bankservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
     @Autowired
-    private AccountService accountService;
+    private AccountServiceImpl accountService;
     @Autowired
     private AccountRepository accountRepository;
 

@@ -1,10 +1,12 @@
-package org.example.bankservice.service;
+package org.example.bankservice.service.account;
 
+import lombok.AllArgsConstructor;
 import org.example.bankservice.dto.*;
+import org.example.bankservice.mapper.AccountMapper;
 import org.example.bankservice.model.*;
 import org.example.bankservice.repository.*;
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.bankservice.service.EmailService;
+import org.example.bankservice.validator.AccountValidator;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,19 +19,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AccountService {
-    @Autowired private AccountRepository accountRepository;
-    @Autowired private BalanceRepository balanceRepository;
-    @Autowired private CardRepository cardRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private UserLevelRepository userLevelRepository;
-    @Autowired private TransactionRepository transactionRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private EmailService emailService;
+@AllArgsConstructor
+public class AccountServiceImpl implements AccountService{
+    private final AccountRepository accountRepository;
+    private final BalanceRepository balanceRepository;
+    private final CardRepository cardRepository;
+    private final UserRepository userRepository;
+    private final UserLevelRepository userLevelRepository;
+    private final TransactionRepository transactionRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final AccountMapper accountMapper;
+    private final AccountValidator accountValidator;
 
     // CREATE
+    @Override
     @CachePut(value = "accounts_dto", key = "#result.accountId")
     public AccountResponseDTO create(AccountDTO accountDTO){
+        accountValidator.validate(accountDTO);
         if (userRepository.findByUsername(accountDTO.getUsername()).isPresent()) {
             throw new RuntimeException("Tên đăng nhập đã tồn tại");
         }
@@ -72,10 +79,11 @@ public class AccountService {
                 "<p>Nhấn vào link để xác thực tài khoản:</p>"
                         + "<a href='" + link + "'>Xác thực ngay</a>"
         );
-        return mapToDTO(saved);
+        return enrichWithHoldBalance(accountMapper.toDto(saved));
     }
 
     // UPDATE
+    @Override
     @Caching(
             put = { @CachePut(value = "accounts_dto", key = "#id") },
             evict = { @CacheEvict(value = "accounts_all_dto", allEntries = true) }
@@ -84,23 +92,17 @@ public class AccountService {
         Account existing = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy account với id: " + id));
 
-        if (accountDTO.getCustomerName() != null && !accountDTO.getCustomerName().isEmpty()){
-            existing.setCustomerName(accountDTO.getCustomerName());
-        }
-        if (accountDTO.getPhoneNumber() != null && !accountDTO.getPhoneNumber().isEmpty()){
-            existing.setPhoneNumber(accountDTO.getPhoneNumber());
-        }
         if (accountDTO.getUserLevelId() != null) {
-            UserLevel level = userLevelRepository.findById(accountDTO.getUserLevelId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Level với id: " + accountDTO.getUserLevelId()));
+            UserLevel level = accountValidator.validateAndGetLevel(accountDTO.getUserLevelId());
             existing.setUserLevel(level);
         }
 
         Account saved = accountRepository.save(existing);
-        return mapToDTO(saved);
+        return enrichWithHoldBalance(accountMapper.toDto(saved));
     }
 
     //DELETE
+    @Override
     @Caching(evict = {
             @CacheEvict(value = "accounts_dto", key = "#accountId"),
             @CacheEvict(value = "accounts_all_dto", allEntries = true)
@@ -131,21 +133,25 @@ public class AccountService {
     }
 
     //GET BY ID
+    @Override
     @Cacheable(value = "accounts_dto", key = "#accountId")
     public AccountResponseDTO getAccountById(Long accountId) {
         Account acc = accountRepository.findByIdWithCards(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-        return mapToDTO(acc);
+        return enrichWithHoldBalance(accountMapper.toDto(acc));
     }
 
     //GET ALL
+    @Override
     @Cacheable(value = "accounts_all_dto")
     public List<AccountResponseDTO> getAllAccount() {
         return accountRepository.findAll().stream()
-                .map(this::mapToDTO)
+                .map(accountMapper::toDto)
+                .map(this::enrichWithHoldBalance)
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Caching(evict = {
             @CacheEvict(value = "accounts_dto", key = "#accountId"),
             @CacheEvict(value = "accounts_all_dto", allEntries = true)
@@ -154,52 +160,27 @@ public class AccountService {
 
     }
 
-    //MAPPER
-    public AccountResponseDTO mapToDTO(Account acc) {
-        AccountResponseDTO dto = new AccountResponseDTO();
-        dto.setAccountId(acc.getAccountId());
-        dto.setCustomerName(acc.getCustomerName());
-        dto.setEmail(acc.getEmail());
-        dto.setPhoneNumber(acc.getPhoneNumber());
-
-        if (acc.getBalance() != null) {
-            BalanceDTO balanceDTO = new BalanceDTO();
-            balanceDTO.setAccountId(acc.getAccountId());
-            balanceDTO.setAvailableBalance(acc.getBalance().getAvailableBalance());
-            balanceDTO.setHoldBalance(acc.getBalance().getHoldBalance());
-            dto.setBalance(balanceDTO);
-        }
-
-        if (acc.getCards() != null) {
-            List<CardDTO> cardDTOs = acc.getCards().stream().map(card -> {
-                CardDTO c = new CardDTO();
-                //c.setAccountId(acc.getAccountId());
-                c.setCardId(card.getCardId());
-                c.setCardNumber(card.getCardNumber());
-                c.setCardType(card.getCardType());
-                c.setExpiryDate(card.getExpiryDate());
-                c.setStatus(card.getStatus());
+    private AccountResponseDTO enrichWithHoldBalance(AccountResponseDTO dto) {
+        if (dto.getCards() != null) {
+            dto.getCards().forEach(c -> {
                 BigDecimal holdBalance = transactionRepository
-                        .findByFromCardAndStatus(card, Transaction.TransactionStatus.WAITING_APPROVAL)
+                        .findByFromCardAndStatus(
+                                cardRepository.findById(c.getCardId())
+                                        .orElseThrow(() -> new RuntimeException("Card not found")),
+                                Transaction.TransactionStatus.WAITING_APPROVAL
+                        )
                         .stream()
                         .map(Transaction::getAmount)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 c.setHoldBalance(holdBalance);
-                return c;
-            }).collect(Collectors.toList());
-            dto.setCards(cardDTOs);
+            });
         }
-
-        if (acc.getUserLevel() != null) {
-            UserLevelDTO lvl = new UserLevelDTO();
-            lvl.setLevelName(acc.getUserLevel().getLevelName());
-            lvl.setCardLimit(acc.getUserLevel().getCardLimit());
-            lvl.setDailyTransferLimit(acc.getUserLevel().getDailyTransferLimit());
-            dto.setUserLevel(lvl);
-        }
-
         return dto;
     }
+
+
+    //MAPPER (maptruct)
+    // tim hiẻu nguyên lý solid
 }
 
