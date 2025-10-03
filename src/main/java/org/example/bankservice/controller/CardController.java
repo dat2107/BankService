@@ -2,8 +2,7 @@ package org.example.bankservice.controller;
 
 import org.example.bankservice.dto.CardDTO;
 import org.example.bankservice.dto.CardResponseDTO;
-import org.example.bankservice.model.Card;
-import org.example.bankservice.service.CardService;
+import org.example.bankservice.service.CardServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api/card")
 public class CardController {
     @Autowired
-    private CardService cardService;
+    private CardServiceImpl cardService;
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CardDTO cardDTO,

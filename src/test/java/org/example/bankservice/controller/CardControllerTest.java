@@ -5,7 +5,7 @@ import org.example.bankservice.config.SecurityConfig;
 import org.example.bankservice.dto.CardDTO;
 import org.example.bankservice.dto.CardResponseDTO;
 import org.example.bankservice.security.JwtUtil;
-import org.example.bankservice.service.CardService;
+import org.example.bankservice.service.CardServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ class CardControllerTest {
     @Autowired private ObjectMapper objectMapper;
 
     @MockitoBean
-    private CardService cardService;
+    private CardServiceImpl cardService;
     @MockitoBean
     private JwtUtil jwtUtil;
 

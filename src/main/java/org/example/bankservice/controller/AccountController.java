@@ -4,6 +4,7 @@ import org.example.bankservice.dto.AccountDTO;
 import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.repository.AccountRepository;
+import org.example.bankservice.service.account.AccountService;
 import org.example.bankservice.service.account.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/account")
 public class AccountController {
     @Autowired
-    private AccountServiceImpl accountService;
+    private AccountService accountService;
     @Autowired
     private AccountRepository accountRepository;
 

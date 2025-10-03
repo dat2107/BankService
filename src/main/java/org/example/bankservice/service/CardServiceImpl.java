@@ -7,7 +7,6 @@ import org.example.bankservice.mapper.AccountMapper;
 import org.example.bankservice.model.*;
 import org.example.bankservice.repository.*;
 import org.example.bankservice.security.JwtUtil;
-import org.example.bankservice.service.account.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -18,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class CardService {
+public class CardServiceImpl {
     @Autowired
     private CardRepository cardRepository;
     @Autowired

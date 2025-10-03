@@ -5,6 +5,7 @@ import org.example.bankservice.dto.AccountResponseDTO;
 import org.example.bankservice.dto.UserDTO;
 import org.example.bankservice.model.Account;
 import org.example.bankservice.repository.AccountRepository;
+import org.example.bankservice.service.account.AccountService;
 import org.example.bankservice.service.account.AccountServiceImpl;
 import org.example.bankservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
     @Autowired
-    private AccountServiceImpl accountService;
+    private AccountService accountService;
     @Autowired
     private AccountRepository accountRepository;
 
